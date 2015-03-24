@@ -6,6 +6,7 @@ import org.junit.Test;
 
 //import javax.activation.DataSource;
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class CarManagerImplTest {
 
     @Test
     public void testCreateCar() throws DatabaseException {
-        Car car = newCar("KE-238BU", true, "Audi", 5555.5);
+        Car car = newCar("KE-238BU", true, "Audi", new BigDecimal(5555.5));
 
         carManager.createCar(car);
 
@@ -57,7 +58,7 @@ public class CarManagerImplTest {
 
     @Test
     public void createCarWithWrongAttributes() throws DatabaseException {
-        Car car = newCar("KE-238BU", true, "Audi", 5555.5);
+        Car car = newCar("KE-238BU", true, "Audi", new BigDecimal(5555.5));
         car.setID(1l);
         try {
             carManager.createCar(car);
@@ -65,21 +66,21 @@ public class CarManagerImplTest {
         } catch (IllegalArgumentException e) {
         }
 
-        car = newCar(null, true, "Audi", 5555.5);
+        car = newCar(null, true, "Audi", new BigDecimal(5555.5));
         try {
             carManager.createCar(car);
             fail("nevyhodil Exception ked licencPlate je null");
         } catch (IllegalArgumentException e) {
         }
 
-        car = newCar("KE-238BU", false, "Audi",  5555.5);
+        car = newCar("KE-238BU", false, "Audi",  new BigDecimal(5555.5));
         try {
             carManager.createCar(car);
             fail("nevyhodil Exception ked status je false");
         } catch (IllegalArgumentException e) {
         }
 
-        car = newCar("KE-238BU", true, null,  5555.5);
+        car = newCar("KE-238BU", true, null,  new BigDecimal(5555.5));
         try {
             carManager.createCar(car);
             fail("nevyhodil Exception ked model je null");
@@ -87,7 +88,7 @@ public class CarManagerImplTest {
         }
 
 
-        car = newCar("KE-238BU", true, "Audi",(-1.0));
+        car = newCar("KE-238BU", true, "Audi",new BigDecimal(-5.5));
         try {
             carManager.createCar(car);
             fail("nevyhodil Exception ked payment je zaporny");
@@ -97,8 +98,8 @@ public class CarManagerImplTest {
 
     @Test
     public void removeCar() throws DatabaseException {
-        Car car1 = newCar("KE-238BU", true, "Audi",  5555.5);
-        Car car2 = newCar("BA-547KU", true, "Skoda",  444.5);
+        Car car1 = newCar("KE-238BU", true, "Audi",  new BigDecimal(5555.55));
+        Car car2 = newCar("BA-547KU", true, "Skoda",  new BigDecimal(444.5));
 
         carManager.createCar(car1);
         carManager.createCar(car2);
@@ -114,7 +115,7 @@ public class CarManagerImplTest {
 
     @Test
     public void removeCarWithNullID() throws DatabaseException {
-        Car car1 = newCar("KE-238BU", true, "Audi", 5555.5);
+        Car car1 = newCar("KE-238BU", true, "Audi", new BigDecimal(5555.5));
 
         try {
             car1.setID(null);
@@ -142,7 +143,7 @@ public class CarManagerImplTest {
 
     }
 
-    public static Car newCar(String licencePlate, boolean status, String model, double payment) {
+    public static Car newCar(String licencePlate, boolean status, String model, BigDecimal payment) {
         Car car = new Car();
 
         car.setLicencePlate(licencePlate);

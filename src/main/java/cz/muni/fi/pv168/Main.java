@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.List;
 import java.util.Locale;
@@ -26,7 +27,7 @@ public class Main {
         ds.setPassword(p.getProperty("jdbc.password"));
 
         CarManager carManager = new CarManagerImpl(ds);
-        carManager.createCar(new Car("ke-200bu","oktavja",125.00,true));
+        carManager.createCar(new Car("ke-200bu","oktavja",new BigDecimal(125.0),true));
 
 
 
