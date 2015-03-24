@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Tue Mar 24 17:34:53 CET 2015:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance a816c00e-014c-4ca3-0140-000002b629c0 
+on database directory memory:C:\Users\Jaro\IdeaProjects\prvyProject\MojeDB with class loader sun.misc.Launcher$AppClassLoader@12a3a380 
+Loaded from file:/C:/Users/Jaro/.m2/repository/org/apache/derby/derby/10.11.1.1/derby-10.11.1.1.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_31-b13
+user.dir=C:\Users\Jaro\IdeaProjects\prvyProject
+os.name=Windows 8.1
+os.arch=amd64
+os.version=6.3
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
