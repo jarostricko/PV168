@@ -7,6 +7,7 @@ public class Car {
     private Long ID;
     private String licencePlate;
     private String model;
+    private int zero; //skuska gitu
     private Double rentalPayment;
     private boolean status;
 
