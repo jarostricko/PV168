@@ -43,7 +43,7 @@ public class CarManagerImpl implements CarManager {
                     "  rental_payment, status) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, car.getLicencePlate().toString());
                 statement.setString(2, car.getModel().toString());
-                statement.setDouble(3, car.getRentalPayment());
+                statement.setBigDecimal(3, car.getRentalPayment());
                 statement.setBoolean(4, car.getStatus());
                 statement.executeUpdate();
                 try (ResultSet keys = statement.getGeneratedKeys()) {
@@ -78,7 +78,7 @@ public class CarManagerImpl implements CarManager {
                 statement.setString(1, car.getLicencePlate().toString());
                 statement.setString(2, car.getModel().toString());
 
-                statement.setDouble(3, car.getRentalPayment());
+                statement.setBigDecimal(3, car.getRentalPayment());
                 statement.setBoolean(4, car.getStatus());
                 statement.setLong(5, car.getID());
                 int s = statement.executeUpdate();
@@ -164,10 +164,9 @@ public class CarManagerImpl implements CarManager {
         car.setLicencePlate(resultSet.getString("license_plate"));
         car.setModel(resultSet.getString("model"));
 
-        car.setRentalPayment(resultSet.getDouble("rental_payment"));
+        car.setRentalPayment(resultSet.getBigDecimal("rental_payment"));
         car.setStatus(resultSet.getBoolean("status"));
         return car;
     }
-
 }
 

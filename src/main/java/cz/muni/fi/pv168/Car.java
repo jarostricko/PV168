@@ -1,5 +1,7 @@
 package cz.muni.fi.pv168;
 
+import java.math.BigDecimal;
+
 /**
  * Created by Jaro on 4.3.2015.
  */
@@ -7,19 +9,14 @@ public class Car {
     private Long ID;
     private String licencePlate;
     private String model;
-    private int zero; //skuska gitu
-    private Double rentalPayment;
+    private BigDecimal rentalPayment;
     private boolean status;
 
-    public Car(String licencePlate, String model, Double rentalPayment, boolean status) {
+    public Car(String licencePlate, String model, BigDecimal rentalPayment, boolean status) {
         this.licencePlate = licencePlate;
         this.model = model;
         this.rentalPayment = rentalPayment;
         this.status = status;
-    }
-
-    public void ninsen(){
-        System.out.println("skuska");
     }
 
     public Car(){
@@ -50,11 +47,11 @@ public class Car {
         this.model = model;
     }
 
-    public Double getRentalPayment() {
+    public BigDecimal getRentalPayment() {
         return rentalPayment;
     }
 
-    public void setRentalPayment(Double rentalPayment) {
+    public void setRentalPayment(BigDecimal rentalPayment) {
         this.rentalPayment = rentalPayment;
     }
 
