@@ -1,11 +1,11 @@
 ----------------------------------------------------------------
-Tue Mar 24 17:34:53 CET 2015:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance a816c00e-014c-4ca3-0140-000002b629c0 
-on database directory memory:C:\Users\Jaro\IdeaProjects\prvyProject\MojeDB with class loader sun.misc.Launcher$AppClassLoader@12a3a380 
-Loaded from file:/C:/Users/Jaro/.m2/repository/org/apache/derby/derby/10.11.1.1/derby-10.11.1.1.jar
+Tue Mar 24 20:10:15 CET 2015:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance a816c00e-014c-4d31-3e2a-000006b5f0e0 
+on database directory memory:C:\Users\Radovan\IdeaProjects\PV168\MojeDB with class loader sun.misc.Launcher$AppClassLoader@12a3a380 
+Loaded from file:/C:/Users/Radovan/.m2/repository/org/apache/derby/derby/10.11.1.1/derby-10.11.1.1.jar
 java.vendor=Oracle Corporation
-java.runtime.version=1.8.0_31-b13
-user.dir=C:\Users\Jaro\IdeaProjects\prvyProject
+java.runtime.version=1.8.0_20-b26
+user.dir=C:\Users\Radovan\IdeaProjects\PV168
 os.name=Windows 8.1
 os.arch=amd64
 os.version=6.3

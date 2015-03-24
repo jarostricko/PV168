@@ -17,6 +17,10 @@ public class Car {
         this.status = status;
     }
 
+    public void ninsen(){
+        System.out.println("skuska");
+    }
+
     public Car(){
 
     }
