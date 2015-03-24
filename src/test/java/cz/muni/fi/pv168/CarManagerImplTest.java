@@ -34,7 +34,7 @@ public class CarManagerImplTest {
 
     @Test
     public void testCreateCar() throws DatabaseException {
-        Car car = newCar("KE-238BU", true, "Audi", new BigDecimal(5555.5));
+        Car car = newCar("KE-238BU", true, "Audi", new BigDecimal(55.5));
 
         carManager.createCar(car);
 
