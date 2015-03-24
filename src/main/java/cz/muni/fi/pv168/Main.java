@@ -1,5 +1,12 @@
 package cz.muni.fi.pv168;
 
+/*
+TODO LIST:
+
+
+
+
+ */
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.LoggerFactory;
