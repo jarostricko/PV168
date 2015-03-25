@@ -86,7 +86,7 @@ public class CarManagerImplTest {
         car = newCar("KE-238BU", true, null,  new BigDecimal(5555.5));
         try {
             carManager.createCar(car);
-            fail("nevyhodil Exception ked model je null");
+            fail("nevyhodil Exception ked model je null.");
         } catch (IllegalArgumentException e) {
         }
 
