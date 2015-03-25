@@ -3,6 +3,7 @@ package cz.muni.fi.pv168;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -37,9 +38,14 @@ public class CarManagerImpl implements CarManager {
                 car.getRentalPayment() == null) {
             throw new IllegalArgumentException("Car with wrong parameter(s).");
         }
+        if (car.getRentalPayment().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Car`s rental payment is lower then 0.");
+        }
+
 
         try (Connection conn = dataSource.getConnection()) {
-            try (PreparedStatement statement = conn.prepareStatement("INSERT INTO CARS (licence_plate,model,rental_payment,status) VALUES (?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement statement = conn.prepareStatement("INSERT INTO CARS (licence_plate,model,rental_payment,status) VALUES (?,?,?,?)",
+                    PreparedStatement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, car.getLicencePlate());
                 statement.setString(2, car.getModel());
                 statement.setBigDecimal(3, car.getRentalPayment());
