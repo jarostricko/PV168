@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -30,11 +31,18 @@ public class Main {
 
         BasicDataSource ds = new BasicDataSource();
         ds.setUrl(p.getProperty("jdbc.url"));
+        System.err.println(p.getProperty("jdbc.url"));
         ds.setUsername(p.getProperty("jdbc.user"));
+        System.err.println(p.getProperty("jdbc.user"));
+
         ds.setPassword(p.getProperty("jdbc.password"));
+        System.err.println(p.getProperty("jdbc.password"));
 
         CarManager carManager = new CarManagerImpl(ds);
         carManager.createCar(new Car("ke-200bu","oktavja",new BigDecimal(125.0),true));
+        //List<Car> allCars = new ArrayList<>();
+        //allCars = carManager.getAllCars();
+        //allCars.forEach(System.out::println);
 
 
 

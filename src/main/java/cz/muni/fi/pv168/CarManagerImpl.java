@@ -38,14 +38,16 @@ public class CarManagerImpl implements CarManager {
             throw new IllegalArgumentException("Car with wrong parameter(s).");
         }
 
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("INSERT INTO CARS (licence_plate, model," +
-                    "  rental_payment, status) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-                statement.setString(1, car.getLicencePlate().toString());
-                statement.setString(2, car.getModel().toString());
+        try (Connection conn = dataSource.getConnection()) {
+            try (PreparedStatement statement = conn.prepareStatement("INSERT INTO CARS (licence_plate,model,rental_payment,status) VALUES (?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+                statement.setString(1, car.getLicencePlate());
+                statement.setString(2, car.getModel());
                 statement.setBigDecimal(3, car.getRentalPayment());
                 statement.setBoolean(4, car.getStatus());
-                statement.executeUpdate();
+                int addedRows = statement.executeUpdate();
+                if (addedRows != 1) {
+                    throw new DatabaseException("Databse error while updating after insetring new car.");
+                }
                 try (ResultSet keys = statement.getGeneratedKeys()) {
                     if (keys.next()) {
                         Long id = keys.getLong(1);
@@ -73,11 +75,10 @@ public class CarManagerImpl implements CarManager {
         }
 
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("UPDATE CARS SET license_plate = ?,model = ?," +
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE CARS SET licence_plate = ?,model = ?," +
                     " rental_payment = ?,status = ? WHERE id=?")) {
                 statement.setString(1, car.getLicencePlate().toString());
                 statement.setString(2, car.getModel().toString());
-
                 statement.setBigDecimal(3, car.getRentalPayment());
                 statement.setBoolean(4, car.getStatus());
                 statement.setLong(5, car.getID());
@@ -148,20 +149,15 @@ public class CarManagerImpl implements CarManager {
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseException("database select failed", e);
+            throw new DatabaseException("Get all cars failed on database.", e);
         }
     }
 
-    @Override
-    public void setDataSource(DataSource ds) {
-        this.dataSource = ds;
-
-    }
 
     private Car getCarFromResultSet(ResultSet resultSet) throws SQLException {
         Car car = new Car();
         car.setID(resultSet.getLong("id"));
-        car.setLicencePlate(resultSet.getString("license_plate"));
+        car.setLicencePlate(resultSet.getString("licence_plate"));
         car.setModel(resultSet.getString("model"));
 
         car.setRentalPayment(resultSet.getBigDecimal("rental_payment"));

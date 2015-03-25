@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 
+import java.math.BigDecimal;
+
 import static cz.muni.fi.pv168.CarManagerImplTest.newCar;
 import static cz.muni.fi.pv168.CustomerManagerImplTest.newCustomer;
 
@@ -19,9 +21,9 @@ public class LeaseManagerImplTest {
     private Customer customer2;
 
     private void prepareDate() throws DatabaseException {
-        car1 = newCar("KE-238BU", true, "Audi", 5555.5);
+        car1 = newCar("KE-238BU", true, "Audi", new BigDecimal(55.5));
         car1.setID(1L);
-        car2 = newCar("BA-547KU", true, "Skoda", 444.5);
+        car2 = newCar("BA-547KU", true, "Skoda", new BigDecimal(55.5));
         car2.setID(2L);
         customer1 = newCustomer("Stevo Kocur","Filakovo, 06587, Slovakia","+421458986254");
         customer1.setID(1L);

@@ -9,9 +9,8 @@
     <schema name="JAROSLAV" catalog=""/>
     <table name="CARS" schema="JAROSLAV" catalog="" type="TABLE">
       <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="QVVUT0lOQ1JFTUVOVDogc3RhcnQgMSBpbmNyZW1lbnQgMQ==" autoIncrement="true"/>
-      <column name="LICENSE_PLATE" sqlType="VARCHAR" precision="8" scale="0" nullable="true" jdbcType="12"/>
+      <column name="LICENCE_PLATE" sqlType="VARCHAR" precision="8" scale="0" nullable="true" jdbcType="12"/>
       <column name="MODEL" sqlType="VARCHAR" precision="32" scale="0" nullable="true" jdbcType="12"/>
-      <column name="COLOR" sqlType="VARCHAR" precision="32" scale="0" nullable="true" jdbcType="12"/>
       <column name="RENTAL_PAYMENT" sqlType="DECIMAL" precision="10" scale="2" nullable="true" jdbcType="3"/>
       <column name="STATUS" sqlType="BOOLEAN" precision="1" scale="0" nullable="true" jdbcType="16"/>
       <primary-key name="SQL150324190858560" columns="ID"/>

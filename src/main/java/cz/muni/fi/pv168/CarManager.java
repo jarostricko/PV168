@@ -18,5 +18,5 @@ public interface CarManager {
 
     public List<Car> getAllCars() throws DatabaseException;
 
-    public void setDataSource(DataSource ds);
+    //public void setDataSource(DataSource ds);
 }

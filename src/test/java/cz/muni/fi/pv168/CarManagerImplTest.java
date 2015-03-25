@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,18 +20,25 @@ public class CarManagerImplTest {
     private CarManagerImpl carManager;
     private DataSource dataSource;
 
+    private static DataSource prepareDataSource() throws SQLException {
+        BasicDataSource ds = new BasicDataSource();
+        ds.setUrl("jdbc:derby:memory:carManager-test;create=true");
+        return ds;
+    }
+
     @Before
     public void setUp() throws SQLException {
         dataSource = prepareDataSource();
-        carManager = new CarManagerImpl();
-        carManager.setDataSource(dataSource);
+        DBUtils.executeSqlScript(dataSource, CarManager.class.getResourceAsStream("/createTables.sql"));
+        carManager = new CarManagerImpl(dataSource);
 
     }
-    private static DataSource prepareDataSource() throws SQLException {
-        BasicDataSource ds = new BasicDataSource();
-        ds.setUrl("jdbc:derby:memory:MojeDB;create=true");
-        return ds;
+
+    @After
+    public void tearDown() throws SQLException {
+        DBUtils.executeSqlScript(dataSource, CarManager.class.getResourceAsStream("/deleteTables.sql"));
     }
+
 
     @Test
     public void testCreateCar() throws DatabaseException {
@@ -52,7 +60,7 @@ public class CarManagerImplTest {
         try {
             carManager.createCar(null);
             fail("nevyhodil NullPointerException pro prazdny vstup");
-        } catch (NullPointerException ex) {
+        } catch (IllegalArgumentException ex) {
         }
     }
 
@@ -73,12 +81,7 @@ public class CarManagerImplTest {
         } catch (IllegalArgumentException e) {
         }
 
-        car = newCar("KE-238BU", false, "Audi",  new BigDecimal(5555.5));
-        try {
-            carManager.createCar(car);
-            fail("nevyhodil Exception ked status je false");
-        } catch (IllegalArgumentException e) {
-        }
+
 
         car = newCar("KE-238BU", true, null,  new BigDecimal(5555.5));
         try {
@@ -121,7 +124,7 @@ public class CarManagerImplTest {
             car1.setID(null);
             carManager.deleteCar(car1.getID());
             fail("nevyhodil vynimku pre car s ID null");
-        }catch (NullPointerException ex){
+        }catch (IllegalArgumentException ex){
 
         }
 
@@ -145,7 +148,6 @@ public class CarManagerImplTest {
 
     public static Car newCar(String licencePlate, boolean status, String model, BigDecimal payment) {
         Car car = new Car();
-
         car.setLicencePlate(licencePlate);
         car.setStatus(status);
         car.setModel(model);
