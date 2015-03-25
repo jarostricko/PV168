@@ -165,7 +165,6 @@ public class CarManagerImpl implements CarManager {
         car.setID(resultSet.getLong("id"));
         car.setLicencePlate(resultSet.getString("licence_plate"));
         car.setModel(resultSet.getString("model"));
-
         car.setRentalPayment(resultSet.getBigDecimal("rental_payment"));
         car.setStatus(resultSet.getBoolean("status"));
         return car;

@@ -8,7 +8,7 @@ import java.util.List;
 public interface CustomerManager {
     public void createCustomer(Customer customer) throws DatabaseException;
     public void deleteCustomer(Long ID) throws DatabaseException;
-    public void upgradeCustomer(Customer customer) throws DatabaseException;
+    public void updateCustomer(Customer customer) throws DatabaseException;
     public Customer getCustomerByID(Long ID) throws DatabaseException;
     public List<Customer> getAllCustomers() throws DatabaseException;
 }

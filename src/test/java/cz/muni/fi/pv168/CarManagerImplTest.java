@@ -37,7 +37,7 @@ public class CarManagerImplTest {
 
     @After
     public void tearDown() throws SQLException {
-        DBUtils.executeSqlScript(dataSource, CarManager.class.getResourceAsStream("/deleteTables.sql"));
+        DBUtils.executeSqlScript(dataSource, CarManager.class.getResourceAsStream("/dropTables.sql"));
     }
 
 
