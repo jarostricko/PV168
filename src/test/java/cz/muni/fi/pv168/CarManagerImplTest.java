@@ -53,7 +53,7 @@ public class CarManagerImplTest {
         Car result = carManager.getCarByID(carID);
         assertEquals(car, result);
         assertNotSame(car, result);
-        assertDeepEquals(car, result);
+        assertCarDeepEquals(car, result);
     }
 
     @Test
@@ -131,15 +131,15 @@ public class CarManagerImplTest {
 
     }
 
-    private void assertDeepEquals(List<Car> expectedList, List<Car> actualList) {
+    private void assertCarDeepEquals(List<Car> expectedList, List<Car> actualList) {
         for (int i = 0; i < expectedList.size(); i++) {
             Car expected = expectedList.get(i);
             Car actual = actualList.get(i);
-            assertDeepEquals(expected, actual);
+            assertCarDeepEquals(expected, actual);
         }
     }
 
-    private void assertDeepEquals(Car expected, Car actual) {
+    private void assertCarDeepEquals(Car expected, Car actual) {
         assertEquals(expected.getID(), actual.getID());
         assertEquals(expected.getLicencePlate(), actual.getLicencePlate());
         assertEquals(expected.getStatus(), actual.getStatus());

@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Wed Mar 25 09:40:58 CET 2015:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance a816c00e-014c-5017-79b5-0000031ca6f8 
+Thu Mar 26 19:06:22 CET 2015:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance a816c00e-014c-5743-78ee-0000030c56e0 
 on database directory memory:C:\Users\Jaro\IdeaProjects\prvyProject\carManager-test with class loader sun.misc.Launcher$AppClassLoader@6d06d69c 
 Loaded from file:/C:/Users/Jaro/.m2/repository/org/apache/derby/derby/10.11.1.1/derby-10.11.1.1.jar
 java.vendor=Oracle Corporation

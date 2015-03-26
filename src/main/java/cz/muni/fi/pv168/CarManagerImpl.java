@@ -72,8 +72,8 @@ public class CarManagerImpl implements CarManager {
         if (car == null) {
             throw new IllegalArgumentException("Car is null.");
         }
-        if (car.getID() != null) {
-            throw new IllegalArgumentException("Car`s ID is already set.");
+        if (car.getID() == null) {
+            throw new IllegalArgumentException("Car`s ID is null.");
         }
         if (car.getLicencePlate() == null || car.getModel() == null ||
                 car.getRentalPayment() == null) {
@@ -83,8 +83,8 @@ public class CarManagerImpl implements CarManager {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement("UPDATE CARS SET licence_plate = ?,model = ?," +
                     " rental_payment = ?,status = ? WHERE id=?")) {
-                statement.setString(1, car.getLicencePlate().toString());
-                statement.setString(2, car.getModel().toString());
+                statement.setString(1, car.getLicencePlate());
+                statement.setString(2, car.getModel());
                 statement.setBigDecimal(3, car.getRentalPayment());
                 statement.setBoolean(4, car.getStatus());
                 statement.setLong(5, car.getID());
@@ -137,7 +137,7 @@ public class CarManagerImpl implements CarManager {
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseException("database select failed", e);
+            throw new DatabaseException("Selecting specify car from database failed.", e);
         }
     }
 
