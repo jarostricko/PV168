@@ -1,7 +1,7 @@
 package cz.muni.fi.pv168;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.sql.Date;
 
 /**
  * Created by Jaro on 10.3.2015.
@@ -11,7 +11,8 @@ public class Lease {
     private Customer customer;
     private Car car;
     private BigDecimal price;
-    private Date startDate, endDate;
+    private Date startDate;
+    private Date endDate;
 
     public Lease(Customer customer, Car car, BigDecimal price, Date startDate, Date endDate) {
         this.customer = customer;
