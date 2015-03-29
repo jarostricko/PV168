@@ -10,7 +10,7 @@ public class Car {
     private String licencePlate;
     private String model;
     private BigDecimal rentalPayment;
-    private boolean status;
+    private boolean status; //true means available, false rented
 
     public Car(String licencePlate, String model, BigDecimal rentalPayment, boolean status) {
         this.licencePlate = licencePlate;

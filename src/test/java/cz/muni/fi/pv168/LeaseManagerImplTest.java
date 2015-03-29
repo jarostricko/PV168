@@ -1,11 +1,13 @@
 package cz.muni.fi.pv168;
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 
 import static cz.muni.fi.pv168.CarManagerImplTest.newCar;
 import static cz.muni.fi.pv168.CustomerManagerImplTest.newCustomer;
@@ -38,11 +40,19 @@ public class LeaseManagerImplTest {
 
     }
 
+    private static DataSource prepareDataSource() throws SQLException {
+        BasicDataSource ds = new BasicDataSource();
+        ds.setUrl("jdbc:derby:memory:leaseManager-test;create=true");
+        return ds;
+
+    }
+
     @Before
     public void setUp() throws Exception {
-        leaseManager = new LeaseManagerImpl();
+        dataSource = prepareDataSource();
+        leaseManager = new LeaseManagerImpl(dataSource);
         carManager = new CarManagerImpl(dataSource);
-        customerManager = new CustomerManagerImpl();
+        customerManager = new CustomerManagerImpl(dataSource);
 
     }
 

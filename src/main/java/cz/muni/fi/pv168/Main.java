@@ -8,12 +8,14 @@ TODO LIST:
 
  */
 
+import com.sun.org.apache.xpath.internal.SourceTree;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +41,26 @@ public class Main {
         System.err.println(p.getProperty("jdbc.password"));
 
         CarManager carManager = new CarManagerImpl(ds);
-        carManager.createCar(new Car("ke-200bu","oktavja",new BigDecimal(125.0),true));
+        //carManager.createCar(new Car("ke-200bu","oktavja",new BigDecimal(125.0),true));
         //List<Car> allCars = new ArrayList<>();
         //allCars = carManager.getAllCars();
         //allCars.forEach(System.out::println);
 
+        LeaseManager leaseManager = new LeaseManagerImpl(ds);
+        Customer customer = new Customer(3L, "Milan Bandurka", "Koksov Baksa, 04058, Slovakia", "+421 965 214 658");
+        Car car = new Car("ke-200bu", "oktavja", new BigDecimal(100.0), true);
+        car.setID(2L);
+        //Date date = new Date(2014,2,12);
+        Lease lease = new Lease();
+        lease.setID(1l);
+        lease.setCar(car);
+        lease.setCustomer(customer);
+        lease.setStartDate(new Date(114, 5, 5));
+        lease.setEndDate(new Date(114, 5, 10));
+        lease.setPrice(leaseManager.calculatePriceByDays(lease));
+        System.out.println(lease);
+        System.out.println(car);
+        System.out.println(customer);
 
 
         //List<Car> allCars = carManager.getAllCars();

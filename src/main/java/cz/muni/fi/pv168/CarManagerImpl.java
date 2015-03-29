@@ -32,14 +32,14 @@ public class CarManagerImpl implements CarManager {
             throw new IllegalArgumentException("Car is null.");
         }
         if (car.getID() != null) {
-            throw new IllegalArgumentException("Car`s ID is already set.");
+            throw new IllegalArgumentException("Cars ID is already set.");
         }
         if (car.getLicencePlate() == null || car.getModel() == null ||
                 car.getRentalPayment() == null) {
             throw new IllegalArgumentException("Car with wrong parameter(s).");
         }
         if (car.getRentalPayment().compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Car`s rental payment is lower then 0.");
+            throw new IllegalArgumentException("Cars rental payment is lower then 0.");
         }
 
 
@@ -52,7 +52,7 @@ public class CarManagerImpl implements CarManager {
                 statement.setBoolean(4, car.getStatus());
                 int addedRows = statement.executeUpdate();
                 if (addedRows != 1) {
-                    throw new DatabaseException("Databse error while updating after insetring new car.");
+                    throw new DatabaseException("Database error while updating after inserting new car.");
                 }
                 try (ResultSet keys = statement.getGeneratedKeys()) {
                     if (keys.next()) {
@@ -73,7 +73,7 @@ public class CarManagerImpl implements CarManager {
             throw new IllegalArgumentException("Car is null.");
         }
         if (car.getID() == null) {
-            throw new IllegalArgumentException("Car`s ID is null.");
+            throw new IllegalArgumentException("Cars ID is null.");
         }
         if (car.getLicencePlate() == null || car.getModel() == null ||
                 car.getRentalPayment() == null) {
@@ -101,7 +101,10 @@ public class CarManagerImpl implements CarManager {
     @Override
     public void deleteCar(Long ID) throws DatabaseException {
         if (ID == null) {
-            throw new IllegalArgumentException("Car`s ID is null.");
+            throw new IllegalArgumentException("Cars ID is null.");
+        }
+        if (!getCarByID(ID).getStatus()) {
+            throw new IllegalArgumentException("Cant delete rented car.");
         }
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement("DELETE FROM CARS WHERE id=?")) {

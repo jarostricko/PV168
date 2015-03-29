@@ -77,8 +77,8 @@ public class Lease {
     public String toString() {
         return "Lease{" +
                 "ID=" + ID +
-                ", customer=" + customer +
-                ", car=" + car +
+                ", customer ID=" + customer.getID() +
+                ", car ID=" + car.getID() +
                 ", price=" + price +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +

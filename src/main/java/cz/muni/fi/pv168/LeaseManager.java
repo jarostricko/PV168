@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -14,4 +15,6 @@ public interface LeaseManager {
     public List<Lease> getAllLeases() throws DatabaseException;
     public List<Lease> getLeasesForCustomer(Customer customer) throws DatabaseException;
     public List<Lease> getLeasesForCar(Car car) throws DatabaseException;
+
+    public BigDecimal calculatePriceByDays(Lease lease) throws DatabaseException;
 }
