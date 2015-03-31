@@ -1,6 +1,32 @@
 ----------------------------------------------------------------
-Tue Mar 31 10:07:19 CEST 2015:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance a816c00e-014c-6ede-d2bd-0000031be838 
+Tue Mar 31 20:32:53 CEST 2015:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance a816c00e-014c-711b-8cb6-000003142ff0 
+on database directory memory:C:\Users\Jaro\IdeaProjects\prvyProject\carManager-test with class loader sun.misc.Launcher$AppClassLoader@6d06d69c 
+Loaded from file:/C:/Users/Jaro/.m2/repository/org/apache/derby/derby/10.11.1.1/derby-10.11.1.1.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_31-b13
+user.dir=C:\Users\Jaro\IdeaProjects\prvyProject
+os.name=Windows 8.1
+os.arch=amd64
+os.version=6.3
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 31 20:32:57 CEST 2015:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance 3213c186-014c-711b-8cb6-000003142ff0 
+on database directory memory:C:\Users\Jaro\IdeaProjects\prvyProject\customerManager-test with class loader sun.misc.Launcher$AppClassLoader@6d06d69c 
+Loaded from file:/C:/Users/Jaro/.m2/repository/org/apache/derby/derby/10.11.1.1/derby-10.11.1.1.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_31-b13
+user.dir=C:\Users\Jaro\IdeaProjects\prvyProject
+os.name=Windows 8.1
+os.arch=amd64
+os.version=6.3
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 31 20:32:58 CEST 2015:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance 1d994327-014c-711b-8cb6-000003142ff0 
 on database directory memory:C:\Users\Jaro\IdeaProjects\prvyProject\leaseManager-test with class loader sun.misc.Launcher$AppClassLoader@6d06d69c 
 Loaded from file:/C:/Users/Jaro/.m2/repository/org/apache/derby/derby/10.11.1.1/derby-10.11.1.1.jar
 java.vendor=Oracle Corporation

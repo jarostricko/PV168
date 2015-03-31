@@ -8,19 +8,14 @@ TODO LIST:
 
  */
 
-import com.sun.org.apache.xpath.internal.SourceTree;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Date;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 
 public class Main {
@@ -41,7 +36,7 @@ public class Main {
         System.err.println(p.getProperty("jdbc.password"));
 
         CarManager carManager = new CarManagerImpl(ds);
-        carManager.createCar(new Car("ke-200bu", "oktavja", new BigDecimal(125.0), true));
+        //carManager.createCar(new Car("ke-200bu", "oktavja", new BigDecimal(125.0), true));
         //List<Car> allCars = new ArrayList<>();
         //allCars = carManager.getAllCars();
         //allCars.forEach(System.out::println);
@@ -61,11 +56,17 @@ public class Main {
         System.out.println(lease);
         System.out.println(car);
         System.out.println(customer);
+        System.out.println();
 
-
+        Date date1 = Date.valueOf("2012-03-20");
+        Date date2 = Date.valueOf("2012-03-25");
+        long diff = leaseManager.getDateDiff(date1, date2, TimeUnit.DAYS);
+        System.out.println("Num of dayz between " + date1 + " and " + date2 + " : " + diff);
         //List<Car> allCars = carManager.getAllCars();
         //allCars.forEach(System.out::println);
-
+        if (diff < 0) {
+            System.out.println("je mensi ako 0");
+        }
 
         /*
         String mysetting1 = p.getProperty("mysetting1");

@@ -82,15 +82,12 @@ public class CarManagerImplTest {
         } catch (IllegalArgumentException e) {
         }
 
-
-
         car = newCar("KE-238BU", true, null,  new BigDecimal(5555.5));
         try {
             carManager.createCar(car);
             fail("nevyhodil Exception ked model je null.");
         } catch (IllegalArgumentException e) {
         }
-
 
         car = newCar("KE-238BU", true, "Audi",new BigDecimal(-5.5));
         try {
@@ -101,7 +98,53 @@ public class CarManagerImplTest {
     }
 
     @Test
-    public void removeCar() throws DatabaseException {
+    public void testUpdateCar() throws DatabaseException {
+        Car car = newCar("KE-238BU", true, "Audi", new BigDecimal(5555.5));
+        carManager.createCar(car);
+        Car car2 = newCar("BA-547KU", true, "Skoda", new BigDecimal(444.5));
+        carManager.createCar(car2);
+
+        Long carID = car.getID();
+        Car result;
+
+        car = carManager.getCarByID(carID);
+        car.setLicencePlate("");
+        carManager.updateCar(car);
+        result = carManager.getCarByID(carID);
+        assertCarDeepEquals(car, result);
+
+        car = carManager.getCarByID(carID);
+        car.setModel("");
+        carManager.updateCar(car);
+        result = carManager.getCarByID(carID);
+        assertCarDeepEquals(car, result);
+
+        car = carManager.getCarByID(carID);
+        car.setRentalPayment(new BigDecimal(333.3));
+        carManager.updateCar(car);
+        result = carManager.getCarByID(carID);
+        assertCarDeepEquals(car, result);
+
+        // Check if updates didn't affected other records
+        assertCarDeepEquals(car2, carManager.getCarByID(car2.getID()));
+    }
+
+    @Test
+    public void testGetCarByID() throws DatabaseException {
+
+        assertNull(carManager.getCarByID(1l));
+
+        Car car = newCar("KE-238BU", true, "Audi", new BigDecimal(5555.5));
+        carManager.createCar(car);
+        Long carID = car.getID();
+
+        Car result = carManager.getCarByID(carID);
+        assertEquals(car, result);
+        assertCarDeepEquals(car, result);
+    }
+
+    @Test
+    public void testRemoveCar() throws DatabaseException {
         Car car1 = newCar("KE-238BU", true, "Audi",  new BigDecimal(5555.55));
         Car car2 = newCar("BA-547KU", true, "Skoda",  new BigDecimal(444.5));
 
@@ -118,7 +161,7 @@ public class CarManagerImplTest {
     }
 
     @Test
-    public void removeCarWithNullID() throws DatabaseException {
+    public void testRemoveCarWithNullID() throws DatabaseException {
         Car car1 = newCar("KE-238BU", true, "Audi", new BigDecimal(5555.5));
 
         try {

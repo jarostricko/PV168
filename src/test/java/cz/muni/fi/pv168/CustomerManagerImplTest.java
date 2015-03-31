@@ -18,7 +18,7 @@ public class CustomerManagerImplTest {
 
     private static DataSource prepareDataSource() throws SQLException {
         BasicDataSource ds = new BasicDataSource();
-        ds.setUrl("jdbc:derby:memory:carManager-test;create=true");
+        ds.setUrl("jdbc:derby:memory:customerManager-test;create=true");
         return ds;
 
     }
