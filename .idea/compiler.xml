@@ -26,5 +26,8 @@
         <module name="prvyProject" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="prvyProject" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

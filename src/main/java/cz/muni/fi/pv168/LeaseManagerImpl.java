@@ -17,11 +17,13 @@ import java.util.concurrent.TimeUnit;
 
 public class LeaseManagerImpl implements LeaseManager {
     private DataSource dataSource;
-    private CustomerManager customerManager = new CustomerManagerImpl();
-    private CarManager carManager = new CarManagerImpl();
+    private CustomerManager customerManager;
+    private CarManager carManager;
 
     public LeaseManagerImpl(DataSource ds) {
         this.dataSource = ds;
+        customerManager = new CustomerManagerImpl(dataSource);
+        carManager = new CarManagerImpl(dataSource);
     }
 
     public LeaseManagerImpl() {
@@ -52,7 +54,7 @@ public class LeaseManagerImpl implements LeaseManager {
             throw new IllegalArgumentException("Cant create lease with wrong attribute(s).");
         }
         try (Connection conn = dataSource.getConnection()) {
-            try (PreparedStatement statement = conn.prepareStatement("INSERT INTO LEASES (CUSTOMER, CAR, PRICE,START_DATE,END_DATE VALUES (?,?,?,?,?)",
+            try (PreparedStatement statement = conn.prepareStatement("INSERT INTO LEASES (CUSTOMER, CAR, PRICE,START_DATE,END_DATE) VALUES (?,?,?,?,?)",
                     PreparedStatement.RETURN_GENERATED_KEYS)) {
                 statement.setLong(1, lease.getCustomer().getID());
                 statement.setLong(2, lease.getCar().getID());
@@ -70,12 +72,28 @@ public class LeaseManagerImpl implements LeaseManager {
                         lease.setID(id);
                     }
                 }
-                lease.getCar().setStatus(false);
-                carManager.updateCar(lease.getCar());
             }
+            lease.getCar().setStatus(false);/*
+            try (PreparedStatement statement = conn.prepareStatement("UPDATE CARS SET licence_plate = ?,model = ?," +
+                    " rental_payment = ?,status = ? WHERE id=?")) {
+                Car car = lease.getCar();
+                statement.setString(1, car.getLicencePlate());
+                statement.setString(2, car.getModel());
+                statement.setBigDecimal(3, car.getRentalPayment());
+                statement.setBoolean(4, car.getStatus());
+                statement.setLong(5, car.getID());
+                int s = statement.executeUpdate();
+                if (s != 1) {
+                    throw new DatabaseException("Car with ID: " + car.getID() + " was not updated.");
+                }
+            }
+                */
+            System.err.println(lease.getCar());
+            carManager.updateCar(lease.getCar());
         } catch (SQLException ex) {
             throw new DatabaseException("Error while inserting lease to database.", ex);
         }
+
 
     }
 
@@ -216,7 +234,7 @@ public class LeaseManagerImpl implements LeaseManager {
             throw new IllegalArgumentException("Cant get all leases. Cars ID is null.");
         }
         try (Connection con = dataSource.getConnection()) {
-            try (PreparedStatement st = con.prepareStatement("SELECT * FROM LEASES WHERE CAR = ?")) {
+            try (PreparedStatement st = con.prepareStatement("SELECT * FROM LEASES WHERE CAR = ?")) { //join treba
                 st.setLong(1, car.getID());
                 try (ResultSet rs = st.executeQuery()) {
                     List<Lease> allLeases = new ArrayList<>();

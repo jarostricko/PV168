@@ -41,7 +41,7 @@ public class Main {
         System.err.println(p.getProperty("jdbc.password"));
 
         CarManager carManager = new CarManagerImpl(ds);
-        //carManager.createCar(new Car("ke-200bu","oktavja",new BigDecimal(125.0),true));
+        carManager.createCar(new Car("ke-200bu", "oktavja", new BigDecimal(125.0), true));
         //List<Car> allCars = new ArrayList<>();
         //allCars = carManager.getAllCars();
         //allCars.forEach(System.out::println);
@@ -55,8 +55,8 @@ public class Main {
         lease.setID(1l);
         lease.setCar(car);
         lease.setCustomer(customer);
-        lease.setStartDate(new Date(114, 5, 5));
-        lease.setEndDate(new Date(114, 5, 10));
+        lease.setStartDate(Date.valueOf("2012-03-20"));
+        lease.setEndDate(new Date(112, 2, 25));
         lease.setPrice(leaseManager.calculatePriceByDays(lease));
         System.out.println(lease);
         System.out.println(car);

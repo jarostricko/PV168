@@ -79,6 +79,8 @@ public class CarManagerImpl implements CarManager {
                 car.getRentalPayment() == null) {
             throw new IllegalArgumentException("Car with wrong parameter(s).");
         }
+        //Connection connection = null;
+        //PreparedStatement statement = null;
 
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement("UPDATE CARS SET licence_plate = ?,model = ?," +

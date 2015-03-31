@@ -70,6 +70,7 @@ public class Car {
                 ", licencePlate='" + licencePlate + '\'' +
                 ", model='" + model + '\'' +
                 ", rental payment= '" + rentalPayment + '\''+
+                ", status= '" + status + '\'' +
                 '}';
     }
 
