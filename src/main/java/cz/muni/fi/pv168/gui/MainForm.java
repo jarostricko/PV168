@@ -73,11 +73,17 @@ public class MainForm extends JFrame {
         customerDataModel = new CustomersTableModel();
         customerTable.setModel(customerDataModel);
 
+        leaseDataModel = new LeasesTableModel();
+        leaseTable.setModel(leaseDataModel);
+
         availableCheckBox.setSelected(true);
 
-        CarsTableModel model = (CarsTableModel) carTable.getModel();
-        model.addCar(new Car("2B6 7895", "Renault Clio", new BigDecimal(444.5), true));
-        model.addCar(new Car("2A1 9999", "Škoda 120", new BigDecimal(444.5), true));
+        CarsTableModel carTableModel = (CarsTableModel) carTable.getModel();
+        carTableModel.addCar(new Car("2B6 7895", "Renault Clio", new BigDecimal(444.5), true));
+        carTableModel.addCar(new Car("2A1 9999", "Škoda 120", new BigDecimal(444.5), true));
+
+        CustomersTableModel customersTableModel = (CustomersTableModel) customerTable.getModel();
+        customersTableModel.addCustomer(new Customer("Stevo Kocur", "Filakovo, 06587, Slovakia", "+421458986254"));
 
 
         setContentPane(rootPanel);

@@ -121,7 +121,7 @@ public class CustomersTableModel extends AbstractTableModel {
         }
     }
 
-    public void addCar(Customer customer) {
+    public void addCustomer(Customer customer) {
         customers.add(customer);
         int lastRow = customers.size() - 1;
         fireTableRowsInserted(lastRow, lastRow);

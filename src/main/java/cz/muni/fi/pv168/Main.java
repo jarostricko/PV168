@@ -44,7 +44,7 @@ public class Main {
         allCars.forEach(System.out::println);
 
         LeaseManager leaseManager = new LeaseManagerImpl(ds);
-        Customer customer = new Customer(3L, "Milan Bandurka", "Koksov Baksa, 04058, Slovakia", "+421 965 214 658");
+        Customer customer = new Customer("Milan Bandurka", "Koksov Baksa, 04058, Slovakia", "+421 965 214 658");
         Car car = new Car("ke-200bu", "oktavja", new BigDecimal(100.0), true);
         car.setID(2L);
         //Date date = new Date(2014,2,12);

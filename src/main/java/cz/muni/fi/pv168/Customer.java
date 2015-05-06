@@ -10,8 +10,7 @@ public class Customer {
     private String phoneNumber;
 
 
-    public Customer(Long ID, String fullName, String address, String phoneNumber) {
-        this.ID = ID;
+    public Customer(String fullName, String address, String phoneNumber) {
         this.fullName = fullName;
         this.address = address;
         this.phoneNumber = phoneNumber;
