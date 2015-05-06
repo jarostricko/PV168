@@ -18,6 +18,10 @@ public class CarsTableModel extends AbstractTableModel {
     private CarManager carManager;
     private List<Car> cars = new ArrayList<Car>();
 
+    private static enum COLUMNS {
+        ID, PLATE, MODEL, RENTALPAYMENT, STATUS
+    }
+
     public void setCarManager(CarManager carManager) {
         this.carManager = carManager;
     }
@@ -29,7 +33,7 @@ public class CarsTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 5;
+        return COLUMNS.values().length;
     }
 
     @Override
@@ -43,7 +47,7 @@ public class CarsTableModel extends AbstractTableModel {
             case 3:
                 return BigDecimal.class;
             case 4:
-                return Boolean.class;
+                return String.class;
             default:
                 throw new IllegalArgumentException("columnIndex");
         }
@@ -68,28 +72,81 @@ public class CarsTableModel extends AbstractTableModel {
         }
     }
 
-    /*
-        @Override
-        public String getColumnName(int columnIndex) {
-            switch (columnIndex) {
-                case 0:
-                    return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_id");
-                case 1:
-                    return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_licencePlate");
-                case 2:
-                    return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_model");
-                case 3:
-                    return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_rentalPayment");
-                case 4:
-                    return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_status");
-                default:
-                    throw new IllegalArgumentException("columnIndex");
-            }
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        Car car = cars.get(rowIndex);
+        switch (COLUMNS.values()[columnIndex]) {
+            case MODEL:
+                car.setModel((String) aValue);
+                break;
+            case PLATE:
+                car.setLicencePlate((String) aValue);
+                break;
+            case RENTALPAYMENT:
+                car.setRentalPayment((BigDecimal) aValue);
+                break;
+            default:
+                throw new IllegalArgumentException("columnIndex");
         }
-    */
+        try {
+            carManager.updateCar(car);
+            fireTableDataChanged();
+        } catch (Exception ex) {
+            log.info("User request failed, exception: " + ex);
+        }
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        switch (columnIndex) {
+            case 1:
+            case 2:
+            case 3:
+                return true;
+            case 0:
+            case 4:
+                return false;
+            default:
+                throw new IllegalArgumentException("columnIndex");
+        }
+    }
+
+    /*
+            @Override
+            public String getColumnName(int columnIndex) {
+                switch (columnIndex) {
+                    case 0:
+                        return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_id");
+                    case 1:
+                        return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_licencePlate");
+                    case 2:
+                        return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_model");
+                    case 3:
+                        return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_rentalPayment");
+                    case 4:
+                        return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_status");
+                    default:
+                        throw new IllegalArgumentException("columnIndex");
+                }
+            }
+        */
     public void addCar(Car car) {
         cars.add(car);
         int lastRow = cars.size() - 1;
         fireTableRowsInserted(lastRow, lastRow);
+    }
+
+    public void removeCar(Car car) {
+        cars.remove(car);
+        fireTableDataChanged();
+    }
+
+    public void clear() {
+        cars.clear();
+        fireTableDataChanged();
+    }
+
+    public List<Car> getAllCars() {
+        return cars;
     }
 }
