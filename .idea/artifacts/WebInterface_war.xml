@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="WebInterface:war">
+    <output-path>$PROJECT_DIR$/../WebInterface/target</output-path>
+    <root id="archive" name="WebInterface-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="WebInterface:war exploded" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="lib">
+          <element id="file-copy" path="D:/My Documents/škola masaryk/4.sem_Jaro 2015/PV168- Seminář z programování v jazyce Java/jcalendar-1.4/lib/jcalendar-1.4.jar" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

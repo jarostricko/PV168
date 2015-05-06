@@ -1,12 +1,11 @@
 package cz.muni.fi.pv168;
 
-import java.math.BigDecimal;
-import java.sql.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.math.BigDecimal;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +15,8 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class LeaseManagerImpl implements LeaseManager {
+    final static Logger log = LoggerFactory.getLogger(LeaseManagerImpl.class);
+
     private DataSource dataSource;
     private CustomerManager customerManager;
     private CarManager carManager;
@@ -32,25 +33,40 @@ public class LeaseManagerImpl implements LeaseManager {
 
     @Override
     public void createLease(Lease lease) throws DatabaseException{
+        if (lease == null) {
+            log.error("Wrong parameter");
+            throw new IllegalArgumentException("Cant create lease. Lease is null.");
+        }
+        if (!checkIfCarInThisLeaseIsAvailable(lease)) {
+            log.error("Wrong parameter");
+            throw new IllegalArgumentException("Car is not available.");
+        }
         if (lease.getID() != null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant create lease. ID is already set.");
         }
         if (lease.getCar() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant create lease. Car is null.");
         }
         if (lease.getCustomer() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant create lease. Customer is null.");
         }
         if (lease.getCar().getID() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant create lease. Cur`s ID is null.");
         }
         if (lease.getCustomer().getID() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant create lease. Customer`s ID is null.");
         }
         if (!lease.getCar().getStatus()) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Car is already rented.");
         }
         if (lease.getPrice() == null || lease.getEndDate() == null || lease.getStartDate() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant create lease with wrong attribute(s).");
         }
         try (Connection conn = dataSource.getConnection()) {
@@ -64,60 +80,51 @@ public class LeaseManagerImpl implements LeaseManager {
 
                 int addedRows = statement.executeUpdate();
                 if (addedRows != 1) {
+                    log.error("Database error while crating a lease.");
                     throw new DatabaseException("Database error while inserting new lease.");
                 }
                 try (ResultSet keys = statement.getGeneratedKeys()) {
                     if (keys.next()) {
                         Long id = keys.getLong(1);
                         lease.setID(id);
+                        log.debug("New Lease with ID: " + lease.getID() + " created.");
                     }
                 }
             }
-            lease.getCar().setStatus(false);/*
-            try (PreparedStatement statement = conn.prepareStatement("UPDATE CARS SET licence_plate = ?,model = ?," +
-                    " rental_payment = ?,status = ? WHERE id=?")) {
-                Car car = lease.getCar();
-                statement.setString(1, car.getLicencePlate());
-                statement.setString(2, car.getModel());
-                statement.setBigDecimal(3, car.getRentalPayment());
-                statement.setBoolean(4, car.getStatus());
-                statement.setLong(5, car.getID());
-                int s = statement.executeUpdate();
-                if (s != 1) {
-                    throw new DatabaseException("Car with ID: " + car.getID() + " was not updated.");
-                }
-            }
-                */
-            System.err.println(lease.getCar());
+
+            lease.getCar().setStatus(false);
             carManager.updateCar(lease.getCar());
         } catch (SQLException ex) {
+            log.error("db connection problem", ex);
             throw new DatabaseException("Error while inserting lease to database.", ex);
         }
-
-
     }
 
     @Override
     public void updateLease(Lease lease) throws DatabaseException{
         if (lease == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant update lease. Lease is null.");
         }
         if (lease.getCar() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant update lease. Car is null.");
         }
         if (lease.getCustomer() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant update lease. Customer is null.");
         }
         if (lease.getCar().getID() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant update lease. Cur`s ID is null.");
         }
         if (lease.getCustomer().getID() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant update lease. Customer`s ID is null.");
         }
-        if (lease.getCar().getStatus()) {
-            throw new IllegalArgumentException("Car in this lease is not rented. Cant update.");
-        }
+
         if (lease.getPrice() == null || lease.getEndDate() == null || lease.getStartDate() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant update lease with wrong attribute(s).");
         }
         try (Connection conn = dataSource.getConnection()) {
@@ -132,10 +139,13 @@ public class LeaseManagerImpl implements LeaseManager {
 
                 int addedRows = statement.executeUpdate();
                 if (addedRows != 1) {
+                    log.error("Database error while updating a lease.");
                     throw new DatabaseException("Lease with ID: " + lease.getID() + " was not updated.");
                 }
+                log.debug("Lease with ID: " + lease.getID() + " updated.");
             }
         } catch (SQLException ex) {
+            log.error("db connection problem", ex);
             throw new DatabaseException("Error while updating lease in database.", ex);
         }
     }
@@ -143,6 +153,7 @@ public class LeaseManagerImpl implements LeaseManager {
     @Override
     public void deleteLease(Long ID) throws DatabaseException{
         if (ID == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant delete lease with ID null.");
         }
         try (Connection connection = dataSource.getConnection()) {
@@ -150,17 +161,22 @@ public class LeaseManagerImpl implements LeaseManager {
                 statement.setLong(1, ID);
                 int s = statement.executeUpdate();
                 if (s != 1) {
+                    log.error("Database error while deleting a lease.");
                     throw new DatabaseException("Lease with ID: " + ID + " was not deleted.");
                 }
+                log.debug("Lease with ID: " + ID + " deleted.");
             }
         } catch (SQLException ex) {
+            log.error("db connection problem", ex);
             throw new DatabaseException("Error while deleting lease from database.", ex);
         }
     }
 
     @Override
     public Lease getLeaseByID(Long ID)throws DatabaseException {
+        log.debug("getting lease by ID: " + ID);
         if (ID == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Lease with null ID.");
         }
         try (Connection con = dataSource.getConnection()) {
@@ -170,6 +186,7 @@ public class LeaseManagerImpl implements LeaseManager {
                     if (rs.next()) {
                         Lease resultLease = getLeaseFromResultSet(rs);
                         if (rs.next()) {
+                            log.error("Database error while getting a lease by ID: " + ID);
                             throw new DatabaseException("Error, find more leases with ID: " + ID);
                         }
                         return resultLease;
@@ -178,13 +195,15 @@ public class LeaseManagerImpl implements LeaseManager {
                     }
                 }
             }
-        } catch (SQLException e) {
-            throw new DatabaseException("Selecting specify lease from database failed.", e);
+        } catch (SQLException ex) {
+            log.error("db connection problem", ex);
+            throw new DatabaseException("Selecting specify lease from database failed.", ex);
         }
     }
 
     @Override
     public List<Lease> getAllLeases()throws DatabaseException {
+        log.debug("getting all leases");
         try (Connection con = dataSource.getConnection()) {
             try (PreparedStatement st = con.prepareStatement("SELECT * FROM LEASES")) {
                 try (ResultSet rs = st.executeQuery()) {
@@ -195,17 +214,21 @@ public class LeaseManagerImpl implements LeaseManager {
                     return allLeases;
                 }
             }
-        } catch (SQLException e) {
-            throw new DatabaseException("Get all leases failed on database.", e);
+        } catch (SQLException ex) {
+            log.error("db connection problem", ex);
+            throw new DatabaseException("Get all leases failed on database.", ex);
         }
     }
 
     @Override
     public List<Lease> getLeasesForCustomer(Customer customer)throws DatabaseException {
+        log.debug("getting all leases for customer with ID:" + customer.getID());
         if (customer == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant get all leases. Customer is null.");
         }
         if (customer.getID() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant get all leases. Customers ID is null.");
         }
         try (Connection con = dataSource.getConnection()) {
@@ -219,22 +242,26 @@ public class LeaseManagerImpl implements LeaseManager {
                     return allLeases;
                 }
             }
-        } catch (SQLException e) {
-            throw new DatabaseException("Get all leases for customer with ID: " + customer.getID().toString() + " failed on database.", e);
+        } catch (SQLException ex) {
+            log.error("db connection problem", ex);
+            throw new DatabaseException("Get all leases for customer with ID: " + customer.getID().toString() + " failed on database.", ex);
         }
 
     }
 
     @Override
     public List<Lease> getLeasesForCar(Car car)throws DatabaseException {
+        log.debug("getting all leases for car with ID: " + car.getID());
         if (car == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant get all leases. Car is null.");
         }
         if (car.getID() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant get all leases. Cars ID is null.");
         }
         try (Connection con = dataSource.getConnection()) {
-            try (PreparedStatement st = con.prepareStatement("SELECT * FROM LEASES WHERE CAR = ?")) { //join treba
+            try (PreparedStatement st = con.prepareStatement("SELECT * FROM LEASES WHERE CAR = ?")) {
                 st.setLong(1, car.getID());
                 try (ResultSet rs = st.executeQuery()) {
                     List<Lease> allLeases = new ArrayList<>();
@@ -244,8 +271,9 @@ public class LeaseManagerImpl implements LeaseManager {
                     return allLeases;
                 }
             }
-        } catch (SQLException e) {
-            throw new DatabaseException("Get all leases for car with ID: " + car.getID().toString() + " failed on database.", e);
+        } catch (SQLException ex) {
+            log.error("db connection problem", ex);
+            throw new DatabaseException("Get all leases for car with ID: " + car.getID().toString() + " failed on database.", ex);
         }
     }
 
@@ -268,23 +296,39 @@ public class LeaseManagerImpl implements LeaseManager {
      * @param timeUnit the unit in which you want the diff
      * @return the diff value, in the provided unit
      */
-    public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
+    public long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
         long diffInMillis = date2.getTime() - date1.getTime();
         return timeUnit.convert(diffInMillis, TimeUnit.MILLISECONDS);
     }
 
     public BigDecimal calculatePriceByDays(Lease lease) {
         if (lease == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant calculate price, lease is null.");
         }
         if (lease.getStartDate() == null || lease.getEndDate() == null || lease.getCar() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant calculate price, lease with wrong parameter(s).");
         }
         if (lease.getCar().getRentalPayment().compareTo(BigDecimal.ZERO) < 0 || lease.getCar().getRentalPayment() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant calculate price, wrong car rental payment.");
         }
 
         BigDecimal dayPrice = lease.getCar().getRentalPayment();
         return dayPrice.multiply(new BigDecimal(getDateDiff(lease.getStartDate(), lease.getEndDate(), TimeUnit.DAYS)));
+    }
+
+    public boolean checkIfCarInThisLeaseIsAvailable(Lease lease) throws DatabaseException {
+        List<Lease> allLeasesForCar = getLeasesForCar(lease.getCar());
+        for (Lease lease1 : allLeasesForCar) {
+            long diff = getDateDiff(lease1.getEndDate(), lease.getStartDate(), TimeUnit.DAYS);
+            if (diff <= 0) {
+                return false;
+            }
+        }
+        lease.getCar().setStatus(true);
+        carManager.updateCar(lease.getCar());
+        return true;
     }
 }

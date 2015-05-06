@@ -1,21 +1,24 @@
 package cz.muni.fi.pv168;
 
-import org.apache.commons.dbcp2.BasicDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.*;
 
 
 /**
  * Created by Jaro on 4.3.2015.
  */
 public class CarManagerImpl implements CarManager {
+
+    final static Logger log = LoggerFactory.getLogger(CarManagerImpl.class);
 
     private DataSource dataSource;
 
@@ -29,16 +32,20 @@ public class CarManagerImpl implements CarManager {
     @Override
     public void createCar(Car car) throws DatabaseException {
         if (car == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Car is null.");
         }
         if (car.getID() != null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cars ID is already set.");
         }
         if (car.getLicencePlate() == null || car.getModel() == null ||
                 car.getRentalPayment() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Car with wrong parameter(s).");
         }
         if (car.getRentalPayment().compareTo(BigDecimal.ZERO) < 0) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cars rental payment is lower then 0.");
         }
 
@@ -52,16 +59,19 @@ public class CarManagerImpl implements CarManager {
                 statement.setBoolean(4, car.getStatus());
                 int addedRows = statement.executeUpdate();
                 if (addedRows != 1) {
+                    log.error("Database error while creating car.");
                     throw new DatabaseException("Database error while updating after inserting new car.");
                 }
                 try (ResultSet keys = statement.getGeneratedKeys()) {
                     if (keys.next()) {
                         Long id = keys.getLong(1);
                         car.setID(id);
+                        log.debug("New Car with ID: " + car.getID() + " created.");
                     }
                 }
             }
         } catch (SQLException ex) {
+            log.error("db connection problem", ex);
             throw new DatabaseException("Error while inserting car to database.", ex);
         }
 
@@ -70,13 +80,16 @@ public class CarManagerImpl implements CarManager {
     @Override
     public void updateCar(Car car) throws DatabaseException {
         if (car == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Car is null.");
         }
         if (car.getID() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cars ID is null.");
         }
         if (car.getLicencePlate() == null || car.getModel() == null ||
                 car.getRentalPayment() == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Car with wrong parameter(s).");
         }
         //Connection connection = null;
@@ -92,10 +105,13 @@ public class CarManagerImpl implements CarManager {
                 statement.setLong(5, car.getID());
                 int s = statement.executeUpdate();
                 if (s != 1) {
+                    log.error("Database error while updating car.");
                     throw new DatabaseException("Car with ID: " + car.getID() + " was not updated.");
                 }
+                log.debug("Car with ID: " + car.getID() + " updated.");
             }
         } catch (SQLException ex) {
+            log.error("db connection problem", ex);
             throw new DatabaseException("Error while updating car in database.", ex);
         }
     }
@@ -103,9 +119,11 @@ public class CarManagerImpl implements CarManager {
     @Override
     public void deleteCar(Long ID) throws DatabaseException {
         if (ID == null) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cars ID is null.");
         }
         if (!getCarByID(ID).getStatus()) {
+            log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant delete rented car.");
         }
         try (Connection connection = dataSource.getConnection()) {
@@ -113,16 +131,20 @@ public class CarManagerImpl implements CarManager {
                 statement.setLong(1, ID);
                 int s = statement.executeUpdate();
                 if (s != 1) {
+                    log.error("Database error while deleting a car.");
                     throw new DatabaseException("Car with ID: " + ID + " was not deleted.");
                 }
+                log.debug("Car with ID: " + ID + " deleted.");
             }
         } catch (SQLException ex) {
+            log.error("db connection problem", ex);
             throw new DatabaseException("Error while deleting car from database.", ex);
         }
     }
 
     @Override
     public Car getCarByID(Long ID) throws DatabaseException {
+        log.debug("getting car by ID: " + ID);
         if (ID == null) {
             throw new IllegalArgumentException("Car with null ID.");
         }
@@ -133,6 +155,7 @@ public class CarManagerImpl implements CarManager {
                     if (rs.next()) {
                         Car resultCar = getCarFromResultSet(rs);
                         if (rs.next()) {
+                            log.error("Database error while getting car by ID :" + ID);
                             throw new DatabaseException("Error, find more car with ID: " + ID);
                         }
                         return resultCar;
@@ -141,13 +164,15 @@ public class CarManagerImpl implements CarManager {
                     }
                 }
             }
-        } catch (SQLException e) {
-            throw new DatabaseException("Selecting specify car from database failed.", e);
+        } catch (SQLException ex) {
+            log.error("db connection problem", ex);
+            throw new DatabaseException("Selecting specify car from database failed.", ex);
         }
     }
 
     @Override
     public List<Car> getAllCars() throws DatabaseException {
+        log.debug("getting all cars");
         try (Connection con = dataSource.getConnection()) {
             try (PreparedStatement st = con.prepareStatement("SELECT * FROM CARS")) {
                 try (ResultSet rs = st.executeQuery()) {
@@ -159,8 +184,9 @@ public class CarManagerImpl implements CarManager {
                     return allCars;
                 }
             }
-        } catch (SQLException e) {
-            throw new DatabaseException("Get all cars failed on database.", e);
+        } catch (SQLException ex) {
+            log.error("db connection problem", ex);
+            throw new DatabaseException("Get all cars failed on database.", ex);
         }
     }
 

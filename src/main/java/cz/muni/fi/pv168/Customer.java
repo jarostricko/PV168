@@ -9,6 +9,7 @@ public class Customer {
     private String address;
     private String phoneNumber;
 
+
     public Customer(Long ID, String fullName, String address, String phoneNumber) {
         this.ID = ID;
         this.fullName = fullName;

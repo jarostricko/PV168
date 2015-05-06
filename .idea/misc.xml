@@ -69,6 +69,10 @@
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$/../WebInterface" />
+    <file type="web" url="file://D:/My Documents/škola masaryk/4.sem_Jaro 2015/PV168- Seminář z programování v jazyce Java/WebInterface" />
+  </component>
   <component name="IdProvider" IDEtalkID="93669F82FDFD363C730EDD3A860AA476" />
   <component name="MavenImportPreferences">
     <option name="importingSettings">
@@ -81,6 +85,8 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="D:/My Documents/škola masaryk/4.sem_Jaro 2015/PV168- Seminář z programování v jazyce Java/WebInterface/pom.xml" />
+        <option value="$PROJECT_DIR$/../WebInterface/pom.xml" />
       </list>
     </option>
   </component>

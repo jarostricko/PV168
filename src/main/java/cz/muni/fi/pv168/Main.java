@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -27,8 +29,8 @@ public class Main {
         p.load(in);
 
         BasicDataSource ds = new BasicDataSource();
-        ds.setUrl(p.getProperty("jdbc.url"));
-        System.err.println(p.getProperty("jdbc.url"));
+        ds.setUrl("jdbc:derby://localhost:1527/MojeDB");
+        System.err.println("jdbc:derby://localhost:1527/MojeDB");
         ds.setUsername(p.getProperty("jdbc.user"));
         System.err.println(p.getProperty("jdbc.user"));
 
@@ -36,10 +38,10 @@ public class Main {
         System.err.println(p.getProperty("jdbc.password"));
 
         CarManager carManager = new CarManagerImpl(ds);
-        //carManager.createCar(new Car("ke-200bu", "oktavja", new BigDecimal(125.0), true));
-        //List<Car> allCars = new ArrayList<>();
-        //allCars = carManager.getAllCars();
-        //allCars.forEach(System.out::println);
+        carManager.createCar(new Car("ke-200bu", "oktavja", new BigDecimal(125.0), true));
+        List<Car> allCars = new ArrayList<>();
+        allCars = carManager.getAllCars();
+        allCars.forEach(System.out::println);
 
         LeaseManager leaseManager = new LeaseManagerImpl(ds);
         Customer customer = new Customer(3L, "Milan Bandurka", "Koksov Baksa, 04058, Slovakia", "+421 965 214 658");

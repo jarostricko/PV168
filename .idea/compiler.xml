@@ -24,10 +24,12 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="prvyProject" />
+        <module name="WebInterface" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="prvyProject" target="1.8" />
+      <module name="WebInterface" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

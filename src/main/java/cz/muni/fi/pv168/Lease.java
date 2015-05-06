@@ -78,7 +78,7 @@ public class Lease {
         return "Lease{" +
                 "ID=" + ID +
                 ", customer ID=" + customer.getID() +
-                ", car ID=" + car.getID() +
+                ", car ID   =" + car.getID() +
                 ", price=" + price +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +

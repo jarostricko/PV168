@@ -21,14 +21,5 @@
     <orderEntry type="library" name="Maven: org.apache.commons:commons-dbcp2:2.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-pool2:2.3" level="project" />
     <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.2" level="project" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://D:/My Documents/škola masaryk/4.sem_Jaro 2015/PV168- Seminář z programování v jazyce Java/jcalendar-1.4/lib/jcalendar-1.4.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
   </component>
 </module>
