@@ -1,12 +1,17 @@
 package cz.muni.fi.pv168.gui;
 
-import cz.muni.fi.pv168.Car;
+import cz.muni.fi.pv168.*;
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.Properties;
 
 /**
  * Created by Jaro on 27.4.2015.
@@ -28,14 +33,44 @@ public class MainForm extends JFrame {
     private JButton createCustomerButton;
     private boolean status;
 
+    BasicDataSource basicDataSource = new BasicDataSource();
+    final static Logger log = LoggerFactory.getLogger(MainForm.class);
+    private String action;
+    CustomerManager customerManager;
+    CarManager carManager;
+    LeaseManager leaseManager;
+    TableModel carDataModel;
+    TableModel customerDataModel;
+    TableModel leaseDataModel;
+
+
+    private void setUp() throws Exception {
+        Properties configFile = new Properties();
+        InputStream in;
+        in = MainForm.class.getResourceAsStream("/myconf.properties");
+        configFile.load(in);
+        BasicDataSource bds = new BasicDataSource();
+        bds.setUrl(configFile.getProperty("jdbc.url"));
+        bds.setPassword(configFile.getProperty("jdbc.password"));
+        bds.setUsername(configFile.getProperty("jdbc.user"));
+        basicDataSource = bds;
+    }
 
     public MainForm() {
         super("Car-Rental-Service");
+        try {
+            setUp();
+        } catch (Exception ex) {
+            log.error("Application setup failed." + ex);
+        }
+        customerManager = new CustomerManagerImpl(basicDataSource);
+        carManager = new CarManagerImpl(basicDataSource);
+        leaseManager = new LeaseManagerImpl(basicDataSource);
 
-        TableModel carDataModel = new CarsTableModel();
+        carDataModel = new CarsTableModel();
         carTable.setModel(carDataModel);
 
-        TableModel customerDataModel = new CustomersTableModel();
+        customerDataModel = new CustomersTableModel();
         customerTable.setModel(customerDataModel);
 
         availableCheckBox.setSelected(true);
@@ -55,6 +90,11 @@ public class MainForm extends JFrame {
             public void actionPerformed(ActionEvent actionEvent) {
                 CarsTableModel model = (CarsTableModel) carTable.getModel();
                 model.addCar(new Car(carLicencePlateTextField.getText(), carModelTextField.getText(), new BigDecimal(carRentalPaymentTextField.getText()), availableCheckBox.isSelected()));
+                try {
+                    carManager.createCar(new Car(carLicencePlateTextField.getText(), carModelTextField.getText(), new BigDecimal(carRentalPaymentTextField.getText()), availableCheckBox.isSelected()));
+                } catch (DatabaseException e) {
+                    e.printStackTrace();
+                }
             }
         });
         createCustomerButton.addActionListener(new ActionListener() {

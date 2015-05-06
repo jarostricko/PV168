@@ -111,8 +111,8 @@ public class CarsTableModel extends AbstractTableModel {
         }
     }
 
-    /*
-            @Override
+
+    @Override
             public String getColumnName(int columnIndex) {
                 switch (columnIndex) {
                     case 0:
@@ -129,7 +129,7 @@ public class CarsTableModel extends AbstractTableModel {
                         throw new IllegalArgumentException("columnIndex");
                 }
             }
-        */
+
     public void addCar(Car car) {
         cars.add(car);
         int lastRow = cars.size() - 1;

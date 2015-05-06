@@ -84,9 +84,7 @@
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
-        <option value="$PROJECT_DIR$/pom.xml" />
         <option value="D:/My Documents/škola masaryk/4.sem_Jaro 2015/PV168- Seminář z programování v jazyce Java/WebInterface/pom.xml" />
-        <option value="$PROJECT_DIR$/../WebInterface/pom.xml" />
       </list>
     </option>
   </component>
