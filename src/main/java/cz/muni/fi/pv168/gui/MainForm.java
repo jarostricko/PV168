@@ -6,17 +6,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import javax.swing.table.TableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Properties;
 
 /**
  * Created by Jaro on 27.4.2015.
  */
 public class MainForm extends JFrame {
+    private static MainForm MAIN_FORM;
+    private boolean status;
+
     private JButton pushMEButton;
     private JPanel rootPanel;
     private JTextField carLicencePlateTextField;
@@ -31,18 +35,44 @@ public class MainForm extends JFrame {
     private JTable leaseTable;
     private JScrollPane leaseScrollPalen;
     private JButton createCustomerButton;
-    private boolean status;
+    private JButton updateCarButton;
+    private JButton deleteCarButton;
+    private JTabbedPane carTabbedPane;
+    private JTabbedPane customerTabbedPane;
+    private JTabbedPane leaseTabbedPane;
+    private JTabbedPane autorentalTabbedPane;
+    private JButton createLeaseButton;
+    private JTextField customerFullnameTextField;
+    private JTextField customerAddressTextField;
+    private JTextField customerPhoneNumberTextField;
 
     BasicDataSource basicDataSource = new BasicDataSource();
     final static Logger log = LoggerFactory.getLogger(MainForm.class);
+    //private AppSwingWorker appSwingWorker;
     private String action;
     CustomerManager customerManager;
     CarManager carManager;
     LeaseManager leaseManager;
-    TableModel carDataModel;
-    TableModel customerDataModel;
-    TableModel leaseDataModel;
+    CarsTableModel carDataModel;
+    CustomersTableModel customerDataModel;
+    LeasesTableModel leaseDataModel;
+    java.util.ResourceBundle bundle;
 
+    private void setTitles(java.util.ResourceBundle bundle) {
+        setTitle(bundle.getString("main.title"));
+        autorentalTabbedPane.setTitleAt(0, bundle.getString("Autorental.dialog_leases_carLabel.text"));
+        autorentalTabbedPane.setTitleAt(1, bundle.getString("Autorental.dialog_leases_customerLabel.text"));
+        autorentalTabbedPane.setTitleAt(2, bundle.getString("Autorental.dialog_leases_leaseLabel.text"));
+        carTabbedPane.setTitleAt(0, bundle.getString("carCreateTab"));
+        carTabbedPane.setTitleAt(1, bundle.getString("carShowListTab"));
+        customerTabbedPane.setTitleAt(0, bundle.getString("customerCreateTab"));
+        customerTabbedPane.setTitleAt(1, bundle.getString("customerShowListTab"));
+        leaseTabbedPane.setTitleAt(0, bundle.getString("leaseCreateTab"));
+        leaseTabbedPane.setTitleAt(1, bundle.getString("leaseShowListTab"));
+        createCarButton.setText(bundle.getString("Autorental.leases_add.text"));
+        createCustomerButton.setText(bundle.getString("Autorental.leases_add.text"));
+        createLeaseButton.setText(bundle.getString("Autorental.leases_add.text"));
+    }
 
     private void setUp() throws Exception {
         Properties configFile = new Properties();
@@ -50,66 +80,159 @@ public class MainForm extends JFrame {
         in = MainForm.class.getResourceAsStream("/myconf.properties");
         configFile.load(in);
         BasicDataSource bds = new BasicDataSource();
+        bds.setDriverClassName(configFile.getProperty("jdbc.driver"));
         bds.setUrl(configFile.getProperty("jdbc.url"));
         bds.setPassword(configFile.getProperty("jdbc.password"));
         bds.setUsername(configFile.getProperty("jdbc.user"));
         basicDataSource = bds;
+
+        customerManager = new CustomerManagerImpl(basicDataSource);
+        carManager = new CarManagerImpl(basicDataSource);
+        leaseManager = new LeaseManagerImpl(basicDataSource);
+        carDataModel = new CarsTableModel();
+        carTable.setModel(carDataModel);
+        customerDataModel = new CustomersTableModel();
+        customerTable.setModel(customerDataModel);
+        leaseDataModel = new LeasesTableModel();
+        leaseTable.setModel(leaseDataModel);
+        availableCheckBox.setSelected(true);
+        bundle = java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui.Bundle");
+    }
+
+    private LeasesSwingWorker leasesSwingWorker;
+
+    private class LeasesSwingWorker extends SwingWorker<Void, Lease> {
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            leaseDataModel = (LeasesTableModel) leaseTable.getModel();
+            leaseDataModel.setLeaseManager(leaseManager);
+            int counter = 0;
+            for (Lease lease : leaseManager.getAllLeases()) {
+                counter++;
+                Thread.sleep(150);
+                publish(lease);
+                setProgress(counter);
+            }
+            return null;
+        }
+
+        @Override
+        protected void process(List<Lease> items) {
+            for (Lease i : items) {
+                leaseDataModel.addLease(i);
+            }
+        }
+
+        @Override
+        protected void done() {
+            //leases_load.setEnabled(true);
+            //rents_progress.setValue(100);
+            leasesSwingWorker = null;
+        }
+    }
+
+    private CustomersSwingWorker customersSwingWorker;
+
+    private class CustomersSwingWorker extends SwingWorker<Void, Customer> {
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            customerDataModel = (CustomersTableModel) customerTable.getModel();
+            customerDataModel.setCustomerManager(customerManager);
+            int counter = 0;
+            for (Customer customer : customerManager.getAllCustomers()) {
+                counter++;
+                Thread.sleep(50);
+                publish(customer);
+                setProgress(counter);
+            }
+            return null;
+        }
+
+        @Override
+        protected void process(List<Customer> items) {
+            for (Customer i : items) {
+                customerDataModel.addCustomer(i);
+            }
+        }
+
+        @Override
+        protected void done() {
+            //customers_load.setEnabled(true);
+            //customers_progress.setValue(100);
+            customersSwingWorker = null;
+        }
+    }
+
+    private CarsSwingWorker carsSwingWorker;
+
+    private class CarsSwingWorker extends SwingWorker<Void, Car> {
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            carDataModel = (CarsTableModel) carTable.getModel();
+            carDataModel.setCarManager(carManager);
+            int counter = 0;
+            for (Car car : carManager.getAllCars()) {
+                counter++;
+                Thread.sleep(100);
+                publish(car);
+                setProgress(counter);
+            }
+            return null;
+        }
+
+        @Override
+        protected void process(List<Car> items) {
+            for (Car i : items) {
+                carDataModel.addCar(i);
+            }
+        }
+
+        @Override
+        protected void done() {
+            //cars_load.setEnabled(true);
+            //cars_progress.setValue(100);
+            carsSwingWorker = null;
+        }
     }
 
     public MainForm() {
-        super("Car-Rental-Service");
         try {
             setUp();
         } catch (Exception ex) {
             log.error("Application setup failed." + ex);
         }
-        customerManager = new CustomerManagerImpl(basicDataSource);
-        carManager = new CarManagerImpl(basicDataSource);
-        leaseManager = new LeaseManagerImpl(basicDataSource);
+        setTitles(bundle);
+        leasesSwingWorker = new LeasesSwingWorker();
+        //rentsSwingWorker.addPropertyChangeListener(rentsProgressListener);
+        leasesSwingWorker.execute();
 
-        carDataModel = new CarsTableModel();
-        carTable.setModel(carDataModel);
+        customersSwingWorker = new CustomersSwingWorker();
+        //customersSwingWorker.addPropertyChangeListener(customersProgressListener);
+        customersSwingWorker.execute();
 
-        customerDataModel = new CustomersTableModel();
-        customerTable.setModel(customerDataModel);
-
-        leaseDataModel = new LeasesTableModel();
-        leaseTable.setModel(leaseDataModel);
-
-        availableCheckBox.setSelected(true);
-
-        CarsTableModel carTableModel = (CarsTableModel) carTable.getModel();
-        carTableModel.addCar(new Car("2B6 7895", "Renault Clio", new BigDecimal(444.5), true));
-        carTableModel.addCar(new Car("2A1 9999", "Škoda 120", new BigDecimal(444.5), true));
-
-        CustomersTableModel customersTableModel = (CustomersTableModel) customerTable.getModel();
-        customersTableModel.addCustomer(new Customer("Stevo Kocur", "Filakovo, 06587, Slovakia", "+421458986254"));
-
+        carsSwingWorker = new CarsSwingWorker();
+        //carsSwingWorker.addPropertyChangeListener(carsProgressListener);
+        carsSwingWorker.execute();
 
         setContentPane(rootPanel);
         pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
 
         createCarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                CarsTableModel model = (CarsTableModel) carTable.getModel();
-                model.addCar(new Car(carLicencePlateTextField.getText(), carModelTextField.getText(), new BigDecimal(carRentalPaymentTextField.getText()), availableCheckBox.isSelected()));
-                try {
-                    carManager.createCar(new Car(carLicencePlateTextField.getText(), carModelTextField.getText(), new BigDecimal(carRentalPaymentTextField.getText()), availableCheckBox.isSelected()));
-                } catch (DatabaseException e) {
-                    e.printStackTrace();
-                }
+                createCarButtonAction(actionEvent);
             }
         });
         createCustomerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-
+                createCustomerButtonAction(actionEvent);
             }
         });
-
 
         pushMEButton.addActionListener(new ActionListener() {
             @Override
@@ -118,15 +241,111 @@ public class MainForm extends JFrame {
             }
         });
 
-
+        updateCarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                updateCarButtonAction(actionEvent);
+            }
+        });
+        deleteCarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                deleteCarButtonAction(actionEvent);
+            }
+        });
     }
 
-    public static void main(String[] args) {
-        MainForm mainForm = new MainForm();
+    public static void main(String[] args) throws InvocationTargetException, InterruptedException {
+
+        System.out.println("Start");
+        java.awt.EventQueue.invokeAndWait(new Runnable() {
+
+            public void run() {
+                MAIN_FORM = new MainForm();
+                MAIN_FORM.setVisible(true);
+            }
+        });
+        System.out.println("End");
 
     }
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
     }
+
+    private void createCarButtonAction(ActionEvent actionEvent) {
+        CarsTableModel model = (CarsTableModel) carTable.getModel();
+        Car car = new Car();
+        if (carLicencePlateTextField.getText().equals("")) {
+            //JOptionPane.showConfirmDialog(MainForm.this, "Licenceplate is empty");
+            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carLicencePlateDialog"));
+            throw new IllegalArgumentException("LicencePlate field is empty.");
+        }
+        if (carModelTextField.getText().equals("")) {
+            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carModelDialog"));
+            throw new IllegalArgumentException("Model field is empty.");
+        }
+        if (!carRentalPaymentTextField.getText().matches("^[0-9.]+$")) {
+            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carRentalPaymentDialog"));
+            throw new IllegalArgumentException("Rental payment must be number.");
+        }
+        car.setStatus(availableCheckBox.isSelected());
+        car.setRentalPayment(new BigDecimal(carRentalPaymentTextField.getText()));
+        car.setModel(carModelTextField.getText());
+        car.setLicencePlate(carLicencePlateTextField.getText());
+        try {
+            carManager.createCar(car);
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
+        model.addCar(car);
+        JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carCreatedDialog"));
+        carLicencePlateTextField.setText("");
+        carRentalPaymentTextField.setText("");
+        carModelTextField.setText("");
+    }
+
+    private void createCustomerButtonAction(ActionEvent actionEvent) {
+        CustomersTableModel model = (CustomersTableModel) customerTable.getModel();
+        Customer customer = new Customer();
+        if (customerFullnameTextField.getText().equals("")) {
+            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("customerFullnameDialog"));
+            throw new IllegalArgumentException("Fullname field is empty.");
+        }
+        if (customerAddressTextField.getText().equals("")) {
+            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("customerAddressDialog"));
+            throw new IllegalArgumentException("Address field is empty.");
+        }
+        if (customerPhoneNumberTextField.getText().equals("")) {
+            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("customerPhoneNumberDialog"));
+            throw new IllegalArgumentException("Phone number field is empty.");
+        }
+        customer.setFullName(customerFullnameTextField.getText());
+        customer.setAddress(customerAddressTextField.getText());
+        customer.setPhoneNumber(customerPhoneNumberTextField.getText());
+        try {
+            customerManager.createCustomer(customer);
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
+        model.addCustomer(customer);
+        JOptionPane.showMessageDialog(MainForm.this, bundle.getString("customerCreatedDialog"));
+        customerFullnameTextField.setText("");
+        customerAddressTextField.setText("");
+        customerPhoneNumberTextField.setText("");
+    }
+
+    private void updateCarButtonAction(ActionEvent actionEvent) {
+
+    }
+
+    private void deleteCarButtonAction(ActionEvent actionEvent) {
+        CarsTableModel model = (CarsTableModel) carTable.getModel();
+        carTable.getSelectedRows();
+
+        Car car1 = new Car();
+        //model.removeCar();
+    }
+
+
 }

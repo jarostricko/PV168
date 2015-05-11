@@ -45,6 +45,8 @@ public class Main {
 
         LeaseManager leaseManager = new LeaseManagerImpl(ds);
         Customer customer = new Customer("Milan Bandurka", "Koksov Baksa, 04058, Slovakia", "+421 965 214 658");
+        CustomerManager customerManager = new CustomerManagerImpl(ds);
+        customerManager.createCustomer(customer);
         Car car = new Car("ke-200bu", "oktavja", new BigDecimal(100.0), true);
         car.setID(2L);
         //Date date = new Date(2014,2,12);
