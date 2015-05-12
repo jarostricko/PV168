@@ -16,7 +16,7 @@ import java.util.List;
 public class CarsTableModel extends AbstractTableModel {
     final static Logger log = LoggerFactory.getLogger(CarsTableModel.class.getName());
     private CarManager carManager;
-    private List<Car> cars = new ArrayList<Car>();
+    private List<Car> cars = new ArrayList<>();
 
     private static enum COLUMNS {
         ID, PLATE, MODEL, RENTALPAYMENT, STATUS
@@ -96,39 +96,24 @@ public class CarsTableModel extends AbstractTableModel {
         }
     }
 
+
     @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
+    public String getColumnName(int columnIndex) {
         switch (columnIndex) {
-            case 1:
-            case 2:
-            case 3:
-                return true;
             case 0:
+                return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_id");
+            case 1:
+                return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_licencePlate");
+            case 2:
+                return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_model");
+            case 3:
+                return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_rentalPayment");
             case 4:
-                return false;
+                return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_status");
             default:
                 throw new IllegalArgumentException("columnIndex");
         }
     }
-
-
-    @Override
-            public String getColumnName(int columnIndex) {
-                switch (columnIndex) {
-                    case 0:
-                        return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_id");
-                    case 1:
-                        return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_licencePlate");
-                    case 2:
-                        return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_model");
-                    case 3:
-                        return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_rentalPayment");
-                    case 4:
-                        return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui/Bundle").getString("cars_table_status");
-                    default:
-                        throw new IllegalArgumentException("columnIndex");
-                }
-            }
 
     public void addCar(Car car) {
         cars.add(car);

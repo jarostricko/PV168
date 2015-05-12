@@ -69,6 +69,10 @@ public class LeaseManagerImpl implements LeaseManager {
             log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant create lease with wrong attribute(s).");
         }
+        if (getDateDiff(lease.getStartDate(), lease.getEndDate(), TimeUnit.DAYS) < 0) {
+            log.error("wrong dates");
+            throw new IllegalArgumentException("Cant create lease with wrong dates.");
+        }
         try (Connection conn = dataSource.getConnection()) {
             try (PreparedStatement statement = conn.prepareStatement("INSERT INTO LEASES (CUSTOMER, CAR, PRICE,START_DATE,END_DATE) VALUES (?,?,?,?,?)",
                     PreparedStatement.RETURN_GENERATED_KEYS)) {

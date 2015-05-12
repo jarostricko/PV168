@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Jaro on 27.4.2015.
@@ -406,23 +407,26 @@ public class MainForm extends JFrame {
         Lease lease = new Lease();
         lease.setCustomer((Customer) customerComboBox.getSelectedItem());
         lease.setCar((Car) carComboBox.getSelectedItem());
-
-        System.err.println(leaseStartDateSetter.getDate());
         lease.setStartDate(convertUtilToSql(leaseStartDateSetter.getDate()));
         lease.setEndDate(convertUtilToSql(leaseEndDateSetter.getDate()));
-        try {
-            lease.setPrice(leaseManager.calculatePriceByDays(lease));
-        } catch (DatabaseException e) {
-            e.printStackTrace();
+        if (leaseManager.getDateDiff(lease.getStartDate(), lease.getEndDate(), TimeUnit.DAYS) < 0) {
+            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("leaseWrongDateDialog"));
+        } else {
+            try {
+                lease.setPrice(leaseManager.calculatePriceByDays(lease));
+            } catch (DatabaseException e) {
+                e.printStackTrace();
+            }
+            try {
+                leaseManager.createLease(lease);
+                model.addLease(lease);
+                carDataModel.updateCar(lease.getCar());
+                JOptionPane.showMessageDialog(MainForm.this, bundle.getString("leaseCreatedDialog"));
+            } catch (DatabaseException e) {
+                e.printStackTrace();
+            }
         }
-        try {
-            leaseManager.createLease(lease);
-            model.addLease(lease);
-            carDataModel.updateCar(lease.getCar());
-            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("leaseCreatedDialog"));
-        } catch (DatabaseException e) {
-            e.printStackTrace();
-        }
+
     }
 
     private void updateCarButtonAction(ActionEvent actionEvent) {
@@ -453,53 +457,68 @@ public class MainForm extends JFrame {
     private void deleteCarButtonAction(ActionEvent actionEvent) {
         CarsTableModel model = (CarsTableModel) carTable.getModel();
         int row = carTable.getSelectedRow();
-        int col = carTable.getSelectedColumn();
-        if ((Boolean) carTable.getValueAt(row, 4)) {
-            try {
-                Car car = carManager.getCarByID((Long) carTable.getValueAt(row, 0));
-                carManager.deleteCar((Long) carTable.getValueAt(row, 0));
-                carComboBox.removeItem(car);
-                model.removeRow(row);
-            } catch (DatabaseException e) {
-                e.printStackTrace();
-            }
+        if (row < 0) {
+            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("selectRowDialog"));
         } else {
-            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carStatusDialog"));
+            if ((Boolean) carTable.getValueAt(row, 4)) {
+                try {
+                    Car car = carManager.getCarByID((Long) carTable.getValueAt(row, 0));
+                    carManager.deleteCar((Long) carTable.getValueAt(row, 0));
+                    carComboBox.removeItem(car);
+                    model.removeRow(row);
+                } catch (DatabaseException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carStatusDialog"));
+            }
         }
+
 
     }
 
     private void deleteCustomerButtonAction(ActionEvent actionEvent) {
         CustomersTableModel model = (CustomersTableModel) customerTable.getModel();
         int row = customerTable.getSelectedRow();
-        int col = customerTable.getSelectedColumn();
-        try {
-            Customer customer = customerManager.getCustomerByID((Long) customerTable.getValueAt(row, 0));
-            customerManager.deleteCustomer((Long) customerTable.getValueAt(row, 0));
-            customerComboBox.removeItem(customer);
-            model.removeRow(row);
-        } catch (DatabaseException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(MainForm.this, "NEDA SA");
+        if (row < 0) {
+            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("selectRowDialog"));
+        } else {
+            try {
+                if (leaseManager.checkIfCustomerIsWithoutLeases(customerManager.getCustomerByID((Long) customerTable.getValueAt(row, 0)))) {
+                    Customer customer = customerManager.getCustomerByID((Long) customerTable.getValueAt(row, 0));
+                    customerManager.deleteCustomer((Long) customerTable.getValueAt(row, 0));
+                    customerComboBox.removeItem(customer);
+                    model.removeRow(row);
+                } else {
+                    JOptionPane.showMessageDialog(MainForm.this, bundle.getString("customerStatusDialog"));
+                }
+            } catch (DatabaseException e) {
+                e.printStackTrace();
+            }
         }
+
+
     }
 
     private void deleteLeaseButtonAction(ActionEvent actionEvent) {
         LeasesTableModel model = (LeasesTableModel) leaseTable.getModel();
         int row = leaseTable.getSelectedRow();
-        int col = leaseTable.getSelectedColumn();
-        try {
-            Customer customer = leaseManager.getLeaseByID((Long) leaseTable.getValueAt(row, 0)).getCustomer();
-            leaseManager.deleteLease((Long) leaseTable.getValueAt(row, 0));
-            model.removeRow(row);
-        } catch (DatabaseException e) {
-            e.printStackTrace();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("selectRowDialog"));
+        } else {
+            try {
+                Customer customer = leaseManager.getLeaseByID((Long) leaseTable.getValueAt(row, 0)).getCustomer();
+                leaseManager.deleteLease((Long) leaseTable.getValueAt(row, 0));
+                model.removeRow(row);
+                customerDataModel.update(customerManager.getCustomerByID(customer.getID()));
+            } catch (DatabaseException e) {
+                e.printStackTrace();
+            }
         }
-    }
 
+    }
     private static java.sql.Date convertUtilToSql(java.util.Date uDate) {
         return new java.sql.Date(uDate.getTime());
-
     }
 
 }

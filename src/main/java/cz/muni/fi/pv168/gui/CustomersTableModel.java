@@ -15,7 +15,7 @@ import java.util.List;
 public class CustomersTableModel extends AbstractTableModel {
     final static Logger log = LoggerFactory.getLogger(CustomersTableModel.class.getName());
     private CustomerManager customerManager;
-    private List<Customer> customers = new ArrayList<Customer>();
+    private List<Customer> customers = new ArrayList<>();
 
     private static enum COLUMNS {
         ID, FULLNAME, ADDRESS, PHONENUMBER, STATUS
@@ -112,21 +112,6 @@ public class CustomersTableModel extends AbstractTableModel {
             fireTableDataChanged();
         } catch (Exception ex) {
             log.info("User request failed, exception: " + ex);
-        }
-    }
-
-    @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-        switch (COLUMNS.values()[columnIndex]) {
-            case ID:
-            case STATUS:
-                return false;
-            case FULLNAME:
-            case ADDRESS:
-            case PHONENUMBER:
-                return true;
-            default:
-                throw new IllegalArgumentException("columnIndex");
         }
     }
 
