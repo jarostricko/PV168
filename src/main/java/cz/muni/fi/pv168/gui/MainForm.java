@@ -473,7 +473,6 @@ public class MainForm extends JFrame {
             Customer customer = leaseManager.getLeaseByID((Long) leaseTable.getValueAt(row, 0)).getCustomer();
             leaseManager.deleteLease((Long) leaseTable.getValueAt(row, 0));
             model.removeRow(row);
-            customerDataModel.update(customer);
         } catch (DatabaseException e) {
             e.printStackTrace();
         }
