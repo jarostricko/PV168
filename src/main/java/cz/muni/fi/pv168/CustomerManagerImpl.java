@@ -44,11 +44,12 @@ public class CustomerManagerImpl implements CustomerManager {
         }
 
         try (Connection conn = dataSource.getConnection()) {
-            try (PreparedStatement statement = conn.prepareStatement("INSERT INTO CUSTOMERS (full_name,address,phone_number) VALUES (?,?,?)",
+            try (PreparedStatement statement = conn.prepareStatement("INSERT INTO CUSTOMERS (full_name,address,phone_number,status) VALUES (?,?,?,?)",
                     PreparedStatement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, customer.getFullName());
                 statement.setString(2, customer.getAddress());
                 statement.setString(3, customer.getPhoneNumber());
+                statement.setBoolean(4, customer.getStatus());
                 int addedRows = statement.executeUpdate();
                 if (addedRows != 1) {
                     log.error("Database error while creating a customer");
@@ -73,6 +74,10 @@ public class CustomerManagerImpl implements CustomerManager {
         if (ID == null) {
             log.error("Wrong parameter");
             throw new IllegalArgumentException("Customer`s ID is null.");
+        }
+        if (!getCustomerByID(ID).getStatus()) {
+            log.error("Cant delete customer with lease.");
+            throw new IllegalArgumentException("Cant delete customer with lease.");
         }
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement("DELETE FROM CUSTOMERS WHERE id=?")) {
@@ -108,11 +113,12 @@ public class CustomerManagerImpl implements CustomerManager {
 
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement("UPDATE CUSTOMERS SET full_name = ?,address = ?," +
-                    " phone_number = ? WHERE id=?")) {
+                    " phone_number = ?,status = ? WHERE id=?")) {
                 statement.setString(1, customer.getFullName());
                 statement.setString(2, customer.getAddress());
                 statement.setString(3, customer.getPhoneNumber());
-                statement.setLong(4, customer.getID());
+                statement.setBoolean(4, customer.getStatus());
+                statement.setLong(5, customer.getID());
                 int s = statement.executeUpdate();
                 if (s != 1) {
                     log.error("Database error while updating a customer");
@@ -182,6 +188,7 @@ public class CustomerManagerImpl implements CustomerManager {
         customer.setFullName(resultSet.getString("full_name"));
         customer.setAddress(resultSet.getString("address"));
         customer.setPhoneNumber(resultSet.getString("phone_number"));
+        customer.setStatus(resultSet.getBoolean("status"));
         return customer;
     }
 

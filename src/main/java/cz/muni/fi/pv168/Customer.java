@@ -8,16 +8,26 @@ public class Customer {
     private String fullName;
     private String address;
     private String phoneNumber;
+    private boolean status;
 
 
     public Customer(String fullName, String address, String phoneNumber) {
         this.fullName = fullName;
         this.address = address;
         this.phoneNumber = phoneNumber;
+        status = true;
     }
 
     public Customer(){
 
+    }
+
+    public boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
     public Long getID() {

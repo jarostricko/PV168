@@ -163,6 +163,10 @@ public class LeasesTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    public void removeRow(int row) {
+        leases.remove(row);
+        fireTableDataChanged();
+    }
     public void clear() {
         leases.clear();
         fireTableDataChanged();

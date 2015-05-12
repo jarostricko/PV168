@@ -32,7 +32,7 @@ public class LeaseManagerImpl implements LeaseManager {
     }
 
     @Override
-    public void createLease(Lease lease) throws DatabaseException{
+    public void createLease(Lease lease) throws DatabaseException {
         if (lease == null) {
             log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant create lease. Lease is null.");
@@ -91,7 +91,8 @@ public class LeaseManagerImpl implements LeaseManager {
                     }
                 }
             }
-
+            lease.getCustomer().setStatus(false);
+            customerManager.updateCustomer(lease.getCustomer());
             lease.getCar().setStatus(false);
             carManager.updateCar(lease.getCar());
         } catch (SQLException ex) {
@@ -101,7 +102,7 @@ public class LeaseManagerImpl implements LeaseManager {
     }
 
     @Override
-    public void updateLease(Lease lease) throws DatabaseException{
+    public void updateLease(Lease lease) throws DatabaseException {
         if (lease == null) {
             log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant update lease. Lease is null.");
@@ -151,12 +152,15 @@ public class LeaseManagerImpl implements LeaseManager {
     }
 
     @Override
-    public void deleteLease(Long ID) throws DatabaseException{
+    public void deleteLease(Long ID) throws DatabaseException {
         if (ID == null) {
             log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant delete lease with ID null.");
         }
         try (Connection connection = dataSource.getConnection()) {
+            Car car = getLeaseByID(ID).getCar();
+            Customer customer = getLeaseByID(ID).getCustomer();
+            Date startDate = getLeaseByID(ID).getStartDate();
             try (PreparedStatement statement = connection.prepareStatement("DELETE FROM LEASES WHERE id=?")) {
                 statement.setLong(1, ID);
                 int s = statement.executeUpdate();
@@ -165,6 +169,14 @@ public class LeaseManagerImpl implements LeaseManager {
                     throw new DatabaseException("Lease with ID: " + ID + " was not deleted.");
                 }
                 log.debug("Lease with ID: " + ID + " deleted.");
+                car.setStatus(true);
+                carManager.updateCar(car);
+                log.debug("Car for deleted lease is now available");
+                if (checkIfCustomerIsWithoutLeases(customer, startDate)) {
+                    customer.setStatus(true);
+                    customerManager.updateCustomer(customer);
+                    log.debug("Customer for deleted lease now has no leases.");
+                }
             }
         } catch (SQLException ex) {
             log.error("db connection problem", ex);
@@ -173,7 +185,7 @@ public class LeaseManagerImpl implements LeaseManager {
     }
 
     @Override
-    public Lease getLeaseByID(Long ID)throws DatabaseException {
+    public Lease getLeaseByID(Long ID) throws DatabaseException {
         log.debug("getting lease by ID: " + ID);
         if (ID == null) {
             log.error("Wrong parameter");
@@ -202,7 +214,7 @@ public class LeaseManagerImpl implements LeaseManager {
     }
 
     @Override
-    public List<Lease> getAllLeases()throws DatabaseException {
+    public List<Lease> getAllLeases() throws DatabaseException {
         log.debug("getting all leases");
         try (Connection con = dataSource.getConnection()) {
             try (PreparedStatement st = con.prepareStatement("SELECT * FROM LEASES")) {
@@ -221,7 +233,7 @@ public class LeaseManagerImpl implements LeaseManager {
     }
 
     @Override
-    public List<Lease> getLeasesForCustomer(Customer customer)throws DatabaseException {
+    public List<Lease> getLeasesForCustomer(Customer customer) throws DatabaseException {
         log.debug("getting all leases for customer with ID:" + customer.getID());
         if (customer == null) {
             log.error("Wrong parameter");
@@ -250,7 +262,7 @@ public class LeaseManagerImpl implements LeaseManager {
     }
 
     @Override
-    public List<Lease> getLeasesForCar(Car car)throws DatabaseException {
+    public List<Lease> getLeasesForCar(Car car) throws DatabaseException {
         log.debug("getting all leases for car with ID: " + car.getID());
         if (car == null) {
             log.error("Wrong parameter");
@@ -330,5 +342,20 @@ public class LeaseManagerImpl implements LeaseManager {
         lease.getCar().setStatus(true);
         carManager.updateCar(lease.getCar());
         return true;
+    }
+
+    public boolean checkIfCustomerIsWithoutLeases(Customer customer, Date startDate) throws DatabaseException {
+        List<Lease> leases = getLeasesForCustomer(customer);
+        if (leases.isEmpty()) {
+            return true;
+        } else {
+            for (Lease lease : leases) {
+                long diff = getDateDiff(lease.getEndDate(), startDate, TimeUnit.DAYS);
+                if (diff <= 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }

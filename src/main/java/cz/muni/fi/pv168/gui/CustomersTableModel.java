@@ -132,6 +132,11 @@ public class CustomersTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    public void removeRow(int row) {
+        customers.remove(row);
+        fireTableDataChanged();
+    }
+
     public void clear() {
         customers.clear();
         fireTableDataChanged();

@@ -143,6 +143,7 @@ public class MainForm extends JFrame {
                 publish(lease);
                 setProgress(counter);
             }
+
             return null;
         }
 
@@ -300,13 +301,13 @@ public class MainForm extends JFrame {
         deleteCustomerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-
+                deleteCustomerButtonAction(actionEvent);
             }
         });
         deleteLeaseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-
+                deleteLeaseButtonAction(actionEvent);
             }
         });
 
@@ -454,6 +455,31 @@ public class MainForm extends JFrame {
             JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carStatusDialog"));
         }
 
+    }
+
+    private void deleteCustomerButtonAction(ActionEvent actionEvent) {
+        CustomersTableModel model = (CustomersTableModel) customerTable.getModel();
+        int row = customerTable.getSelectedRow();
+        int col = customerTable.getSelectedColumn();
+
+        try {
+            customerManager.deleteCustomer((Long) customerTable.getValueAt(row, 0));
+            model.removeRow(row);
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteLeaseButtonAction(ActionEvent actionEvent) {
+        LeasesTableModel model = (LeasesTableModel) leaseTable.getModel();
+        int row = leaseTable.getSelectedRow();
+        int col = leaseTable.getSelectedColumn();
+        try {
+            leaseManager.deleteLease((Long) leaseTable.getValueAt(row, 0));
+            model.removeRow(row);
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
     }
 
 

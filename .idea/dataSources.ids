@@ -13,16 +13,17 @@
       <column name="MODEL" sqlType="VARCHAR" precision="32" scale="0" nullable="false" jdbcType="12"/>
       <column name="RENTAL_PAYMENT" sqlType="DECIMAL" precision="10" scale="1" nullable="false" jdbcType="3"/>
       <column name="STATUS" sqlType="BOOLEAN" precision="1" scale="0" nullable="false" jdbcType="16"/>
-      <primary-key name="SQL150422090425150" columns="ID"/>
-      <exported-key name="SQL150422090524532" table="LEASES" schema="JAROSLAV" catalog="" columns="CAR"/>
+      <primary-key name="SQL150512190125680" columns="ID"/>
+      <exported-key name="SQL150512190144622" table="LEASES" schema="JAROSLAV" catalog="" columns="CAR"/>
     </table>
     <table name="CUSTOMERS" schema="JAROSLAV" catalog="" type="TABLE">
       <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="QVVUT0lOQ1JFTUVOVDogc3RhcnQgMSBpbmNyZW1lbnQgMQ==" autoIncrement="true"/>
       <column name="FULL_NAME" sqlType="VARCHAR" precision="60" scale="0" nullable="false" jdbcType="12"/>
       <column name="ADDRESS" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12"/>
       <column name="PHONE_NUMBER" sqlType="VARCHAR" precision="32" scale="0" nullable="false" jdbcType="12"/>
-      <primary-key name="SQL150422090500200" columns="ID"/>
-      <exported-key name="SQL150422090524531" table="LEASES" schema="JAROSLAV" catalog="" columns="CUSTOMER"/>
+      <column name="STATUS" sqlType="BOOLEAN" precision="1" scale="0" nullable="false" jdbcType="16"/>
+      <primary-key name="SQL150512190133690" columns="ID"/>
+      <exported-key name="SQL150512190144621" table="LEASES" schema="JAROSLAV" catalog="" columns="CUSTOMER"/>
     </table>
     <table name="LEASES" schema="JAROSLAV" catalog="" type="TABLE">
       <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="QVVUT0lOQ1JFTUVOVDogc3RhcnQgMSBpbmNyZW1lbnQgMQ==" autoIncrement="true"/>
@@ -31,9 +32,9 @@
       <column name="PRICE" sqlType="DECIMAL" precision="10" scale="1" nullable="false" jdbcType="3"/>
       <column name="START_DATE" sqlType="DATE" precision="10" scale="0" nullable="false" jdbcType="91"/>
       <column name="END_DATE" sqlType="DATE" precision="10" scale="0" nullable="false" jdbcType="91"/>
-      <primary-key name="SQL150422090524530" columns="ID"/>
-      <foreign-key name="SQL150422090524532" columns="CAR" ref-table="CARS" ref-schema="JAROSLAV" ref-catalog="" ref-columns="ID" update-rule="3" delete-rule="3" deferrability="2"/>
-      <foreign-key name="SQL150422090524531" columns="CUSTOMER" ref-table="CUSTOMERS" ref-schema="JAROSLAV" ref-catalog="" ref-columns="ID" update-rule="3" delete-rule="3" deferrability="2"/>
+      <primary-key name="SQL150512190144620" columns="ID"/>
+      <foreign-key name="SQL150512190144622" columns="CAR" ref-table="CARS" ref-schema="JAROSLAV" ref-catalog="" ref-columns="ID" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="SQL150512190144621" columns="CUSTOMER" ref-table="CUSTOMERS" ref-schema="JAROSLAV" ref-catalog="" ref-columns="ID" update-rule="3" delete-rule="3" deferrability="2"/>
     </table>
   </data-source>
 </component>
