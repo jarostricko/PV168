@@ -20,4 +20,8 @@ public interface LeaseManager {
 
     public long getDateDiff(Date date1, Date date2, TimeUnit timeUnit);
     public BigDecimal calculatePriceByDays(Lease lease) throws DatabaseException;
+
+    public boolean checkIfCarInThisLeaseIsAvailable(Lease lease) throws DatabaseException;
+
+    public boolean checkIfCustomerIsWithoutLeases(Customer customer) throws DatabaseException;
 }

@@ -15,7 +15,7 @@ public class Customer {
         this.fullName = fullName;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        status = true;
+        this.status = true;
     }
 
     public Customer(){

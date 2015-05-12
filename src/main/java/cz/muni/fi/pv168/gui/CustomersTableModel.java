@@ -18,7 +18,7 @@ public class CustomersTableModel extends AbstractTableModel {
     private List<Customer> customers = new ArrayList<Customer>();
 
     private static enum COLUMNS {
-        ID, FULLNAME, ADDRESS, PHONENUMBER
+        ID, FULLNAME, ADDRESS, PHONENUMBER, STATUS
     }
 
     public void setCustomerManager(CustomerManager customerManager) {
@@ -43,6 +43,8 @@ public class CustomersTableModel extends AbstractTableModel {
             case ADDRESS:
             case PHONENUMBER:
                 return String.class;
+            case STATUS:
+                return String.class;
             default:
                 throw new IllegalArgumentException("columnIndex");
         }
@@ -59,6 +61,8 @@ public class CustomersTableModel extends AbstractTableModel {
                 return customer.getAddress();
             case 3:
                 return customer.getPhoneNumber();
+            case 4:
+                return customer.getStatus();
             default:
                 throw new IllegalArgumentException("columnIndex");
         }
@@ -75,6 +79,8 @@ public class CustomersTableModel extends AbstractTableModel {
                 return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui.Bundle").getString("customers_table_address");
             case 3:
                 return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui.Bundle").getString("customers_table_phoneNumber");
+            case 4:
+                return java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui.Bundle").getString("customers_table_status");
             default:
                 throw new IllegalArgumentException("columnIndex");
         }
@@ -96,6 +102,8 @@ public class CustomersTableModel extends AbstractTableModel {
             case 3:
                 customer.setPhoneNumber((String) aValue);
                 break;
+            case 4:
+                customer.setStatus((Boolean) aValue);
             default:
                 throw new IllegalArgumentException("columnIndex");
         }
@@ -111,6 +119,7 @@ public class CustomersTableModel extends AbstractTableModel {
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         switch (COLUMNS.values()[columnIndex]) {
             case ID:
+            case STATUS:
                 return false;
             case FULLNAME:
             case ADDRESS:
@@ -140,6 +149,13 @@ public class CustomersTableModel extends AbstractTableModel {
     public void clear() {
         customers.clear();
         fireTableDataChanged();
+    }
+
+    public void update(Customer customer) {
+        customers.remove(customer);
+        customers.add(customer);
+        fireTableDataChanged();
+
     }
 
     public List<Customer> getAllCustomers() {

@@ -160,7 +160,6 @@ public class LeaseManagerImpl implements LeaseManager {
         try (Connection connection = dataSource.getConnection()) {
             Car car = getLeaseByID(ID).getCar();
             Customer customer = getLeaseByID(ID).getCustomer();
-            Date startDate = getLeaseByID(ID).getStartDate();
             try (PreparedStatement statement = connection.prepareStatement("DELETE FROM LEASES WHERE id=?")) {
                 statement.setLong(1, ID);
                 int s = statement.executeUpdate();
@@ -172,7 +171,7 @@ public class LeaseManagerImpl implements LeaseManager {
                 car.setStatus(true);
                 carManager.updateCar(car);
                 log.debug("Car for deleted lease is now available");
-                if (checkIfCustomerIsWithoutLeases(customer, startDate)) {
+                if (checkIfCustomerIsWithoutLeases(customer)) {
                     customer.setStatus(true);
                     customerManager.updateCustomer(customer);
                     log.debug("Customer for deleted lease now has no leases.");
@@ -344,18 +343,9 @@ public class LeaseManagerImpl implements LeaseManager {
         return true;
     }
 
-    public boolean checkIfCustomerIsWithoutLeases(Customer customer, Date startDate) throws DatabaseException {
+    public boolean checkIfCustomerIsWithoutLeases(Customer customer) throws DatabaseException {
         List<Lease> leases = getLeasesForCustomer(customer);
-        if (leases.isEmpty()) {
-            return true;
-        } else {
-            for (Lease lease : leases) {
-                long diff = getDateDiff(lease.getEndDate(), startDate, TimeUnit.DAYS);
-                if (diff <= 0) {
-                    return false;
-                }
-            }
-            return true;
-        }
+        return leases.isEmpty();
     }
+
 }

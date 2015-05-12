@@ -75,7 +75,7 @@ public class CustomerManagerImpl implements CustomerManager {
             log.error("Wrong parameter");
             throw new IllegalArgumentException("Customer`s ID is null.");
         }
-        if (!getCustomerByID(ID).getStatus()) {
+        if (getCustomerByID(ID).getStatus() == false) {
             log.error("Cant delete customer with lease.");
             throw new IllegalArgumentException("Cant delete customer with lease.");
         }

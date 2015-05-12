@@ -107,6 +107,10 @@ public class MainForm extends JFrame {
         availableCheckBox.setSelected(true);
         bundle = java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui.Bundle");
 
+
+    }
+
+    private void setUpComboBoxes() {
         List<Car> cars = new ArrayList<>();
         try {
             cars = carManager.getAllCars();
@@ -231,6 +235,7 @@ public class MainForm extends JFrame {
     public MainForm() {
         try {
             setUp();
+            setUpComboBoxes();
         } catch (Exception ex) {
             log.error("Application setup failed." + ex);
         }
@@ -310,23 +315,6 @@ public class MainForm extends JFrame {
                 deleteLeaseButtonAction(actionEvent);
             }
         });
-
-
-        customerComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                customerComboBoxAction(actionEvent);
-            }
-        });
-        carComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                carComboBoxAction(actionEvent);
-            }
-        });
-
-
-
     }
 
     public static void main(String[] args) throws InvocationTargetException, InterruptedException {
@@ -369,6 +357,7 @@ public class MainForm extends JFrame {
         try {
             carManager.createCar(car);
             model.addCar(car);
+            carComboBox.addItem(car);
             JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carCreatedDialog"));
         } catch (DatabaseException e) {
             e.printStackTrace();
@@ -397,9 +386,11 @@ public class MainForm extends JFrame {
         customer.setFullName(customerFullnameTextField.getText());
         customer.setAddress(customerAddressTextField.getText());
         customer.setPhoneNumber(customerPhoneNumberTextField.getText());
+        customer.setStatus(true);
         try {
             customerManager.createCustomer(customer);
             model.addCustomer(customer);
+            customerComboBox.addItem(customer);
             JOptionPane.showMessageDialog(MainForm.this, bundle.getString("customerCreatedDialog"));
         } catch (DatabaseException e) {
             e.printStackTrace();
@@ -446,7 +437,9 @@ public class MainForm extends JFrame {
         int col = carTable.getSelectedColumn();
         if ((Boolean) carTable.getValueAt(row, 4)) {
             try {
+                Car car = carManager.getCarByID((Long) carTable.getValueAt(row, 0));
                 carManager.deleteCar((Long) carTable.getValueAt(row, 0));
+                carComboBox.removeItem(car);
                 model.removeRow(row);
             } catch (DatabaseException e) {
                 e.printStackTrace();
@@ -461,12 +454,14 @@ public class MainForm extends JFrame {
         CustomersTableModel model = (CustomersTableModel) customerTable.getModel();
         int row = customerTable.getSelectedRow();
         int col = customerTable.getSelectedColumn();
-
         try {
+            Customer customer = customerManager.getCustomerByID((Long) customerTable.getValueAt(row, 0));
             customerManager.deleteCustomer((Long) customerTable.getValueAt(row, 0));
+            customerComboBox.removeItem(customer);
             model.removeRow(row);
         } catch (DatabaseException e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(MainForm.this, "NEDA SA");
         }
     }
 
@@ -475,21 +470,13 @@ public class MainForm extends JFrame {
         int row = leaseTable.getSelectedRow();
         int col = leaseTable.getSelectedColumn();
         try {
+            Customer customer = leaseManager.getLeaseByID((Long) leaseTable.getValueAt(row, 0)).getCustomer();
             leaseManager.deleteLease((Long) leaseTable.getValueAt(row, 0));
             model.removeRow(row);
+            customerDataModel.update(customer);
         } catch (DatabaseException e) {
             e.printStackTrace();
         }
-    }
-
-
-    private void carComboBoxAction(ActionEvent actionEvent) {
-        //JComboBox<Car> carComboBox = new JComboBox<>()
-
-    }
-
-    private void customerComboBoxAction(ActionEvent actionEvent) {
-
     }
 
     private static java.sql.Date convertUtilToSql(java.util.Date uDate) {
