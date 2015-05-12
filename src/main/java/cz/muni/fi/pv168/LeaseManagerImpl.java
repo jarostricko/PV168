@@ -65,7 +65,7 @@ public class LeaseManagerImpl implements LeaseManager {
             log.error("Wrong parameter");
             throw new IllegalArgumentException("Car is already rented.");
         }
-        if (lease.getPrice() == null || lease.getEndDate() == null || lease.getStartDate() == null) {
+        if (lease.getEndDate() == null || lease.getStartDate() == null || lease.getPrice() == null) {
             log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant create lease with wrong attribute(s).");
         }

@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import javax.swing.table.AbstractTableModel;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.sql.Date;
 import java.util.List;
 
 /**
@@ -51,15 +50,15 @@ public class LeasesTableModel extends AbstractTableModel {
         switch (COLUMNS.values()[columnIndex]) {
             case ID:
                 return Long.class;
-            case CAR://? id ??
+            case CAR:
                 return Car.class;
-            case CUSTOMER://?
+            case CUSTOMER:
                 return Customer.class;
             case PRICE:
                 return BigDecimal.class;
             case STARTDATE:
             case ENDDATE:
-                return Date.class;
+                return java.sql.Date.class;
             default:
                 throw new IllegalArgumentException("columnIndex");
         }
@@ -123,9 +122,9 @@ public class LeasesTableModel extends AbstractTableModel {
                 lease.setPrice(new BigDecimal((String) aValue));
                 break;
             case 4:
-                lease.setStartDate(Date.valueOf((String) aValue));
+                lease.setStartDate(java.sql.Date.valueOf((String) aValue));
             case 5:
-                lease.setEndDate(Date.valueOf((String) aValue));
+                lease.setEndDate(java.sql.Date.valueOf((String) aValue));
             default:
                 throw new IllegalArgumentException("columnIndex");
         }

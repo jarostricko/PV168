@@ -123,6 +123,7 @@ public class CarManagerImpl implements CarManager {
             throw new IllegalArgumentException("Cars ID is null.");
         }
         if (!getCarByID(ID).getStatus()) {
+            System.err.println("TUTO");
             log.error("Wrong parameter");
             throw new IllegalArgumentException("Cant delete rented car.");
         }

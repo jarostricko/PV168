@@ -141,6 +141,17 @@ public class CarsTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    public void removeRow(int row) {
+        cars.remove(row);
+        fireTableDataChanged();
+    }
+
+    public void updateCar(Car car) {
+        cars.remove(car);
+        cars.add(car);
+        fireTableDataChanged();
+    }
+
     public void clear() {
         cars.clear();
         fireTableDataChanged();

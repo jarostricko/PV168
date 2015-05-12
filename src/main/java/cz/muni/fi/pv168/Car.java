@@ -65,6 +65,11 @@ public class Car {
 
     @Override
     public String toString() {
+        return "ID: " + ID + ", " + licencePlate + ", " + model + ", " + rentalPayment;
+    }
+
+ /*   @Override
+    public String toString() {
         return "Car{" +
                 "ID=" + ID +
                 ", licencePlate='" + licencePlate + '\'' +
@@ -72,7 +77,7 @@ public class Car {
                 ", rental payment= '" + rentalPayment + '\''+
                 ", status= '" + status + '\'' +
                 '}';
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {
