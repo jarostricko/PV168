@@ -142,7 +142,4 @@ public class CarsTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
-    public List<Car> getAllCars() {
-        return cars;
-    }
 }

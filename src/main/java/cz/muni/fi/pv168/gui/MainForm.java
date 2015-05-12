@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class MainForm extends JFrame {
     private static MainForm MAIN_FORM;
-    private boolean status;
 
     private JPanel rootPanel;
     private JTextField carLicencePlateTextField;
@@ -31,11 +30,8 @@ public class MainForm extends JFrame {
     private JButton createCarButton;
     private JTable customerTable;
     private JTable carTable;
-    private JScrollPane carScrollPanel;
     private JCheckBox availableCheckBox;
-    private JScrollPane customerScrollPanel;
     private JTable leaseTable;
-    private JScrollPane leaseScrollPalen;
     private JButton createCustomerButton;
     private JButton updateCarButton;
     private JButton deleteCarButton;
@@ -58,8 +54,6 @@ public class MainForm extends JFrame {
 
     BasicDataSource basicDataSource = new BasicDataSource();
     final static Logger log = LoggerFactory.getLogger(MainForm.class);
-    //private AppSwingWorker appSwingWorker;
-    private String action;
     CustomerManager customerManager;
     CarManager carManager;
     LeaseManager leaseManager;
@@ -242,15 +236,12 @@ public class MainForm extends JFrame {
         }
         setTitles(bundle);
         leasesSwingWorker = new LeasesSwingWorker();
-        //rentsSwingWorker.addPropertyChangeListener(rentsProgressListener);
         leasesSwingWorker.execute();
 
         customersSwingWorker = new CustomersSwingWorker();
-        //customersSwingWorker.addPropertyChangeListener(customersProgressListener);
         customersSwingWorker.execute();
 
         carsSwingWorker = new CarsSwingWorker();
-        //carsSwingWorker.addPropertyChangeListener(carsProgressListener);
         carsSwingWorker.execute();
 
         setContentPane(rootPanel);
@@ -258,32 +249,12 @@ public class MainForm extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Create buttons
-        createCarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                createCarButtonAction(actionEvent);
-            }
-        });
-        createCustomerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                createCustomerButtonAction(actionEvent);
-            }
-        });
-        createLeaseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                createLeaseButtonAction(actionEvent);
-            }
-        });
+        createCarButton.addActionListener(actionEvent -> createCarButtonAction());
+        createCustomerButton.addActionListener(actionEvent -> createCustomerButtonAction());
+        createLeaseButton.addActionListener(actionEvent -> createLeaseButtonAction());
 
         //Update buttons
-        updateCarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                updateCarButtonAction(actionEvent);
-            }
-        });
+        updateCarButton.addActionListener(actionEvent -> updateCarButtonAction());
         updateCustomerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -301,19 +272,19 @@ public class MainForm extends JFrame {
         deleteCarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                deleteCarButtonAction(actionEvent);
+                deleteCarButtonAction();
             }
         });
         deleteCustomerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                deleteCustomerButtonAction(actionEvent);
+                deleteCustomerButtonAction();
             }
         });
         deleteLeaseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                deleteLeaseButtonAction(actionEvent);
+                deleteLeaseButtonAction();
             }
         });
     }
@@ -321,12 +292,9 @@ public class MainForm extends JFrame {
     public static void main(String[] args) throws InvocationTargetException, InterruptedException {
 
         System.out.println("Start");
-        java.awt.EventQueue.invokeAndWait(new Runnable() {
-
-            public void run() {
-                MAIN_FORM = new MainForm();
-                MAIN_FORM.setVisible(true);
-            }
+        java.awt.EventQueue.invokeAndWait(() -> {
+            MAIN_FORM = new MainForm();
+            MAIN_FORM.setVisible(true);
         });
         System.out.println("End");
 
@@ -336,18 +304,21 @@ public class MainForm extends JFrame {
         // TODO: place custom component creation code here
     }
 
-    private void createCarButtonAction(ActionEvent actionEvent) {
+    private void createCarButtonAction() {
         CarsTableModel model = (CarsTableModel) carTable.getModel();
         Car car = new Car();
         if (carLicencePlateTextField.getText().equals("")) {
+            log.debug("Licenceplate is empty");
             JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carLicencePlateDialog"));
             throw new IllegalArgumentException("LicencePlate field is empty.");
         }
         if (carModelTextField.getText().equals("")) {
+            log.debug("Model is empty");
             JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carModelDialog"));
             throw new IllegalArgumentException("Model field is empty.");
         }
         if (!carRentalPaymentTextField.getText().matches("^[0-9.]+$")) {
+            log.debug("rental Payment wrong");
             JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carRentalPaymentDialog"));
             throw new IllegalArgumentException("Rental payment must be number.");
         }
@@ -361,6 +332,7 @@ public class MainForm extends JFrame {
             carComboBox.addItem(car);
             JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carCreatedDialog"));
         } catch (DatabaseException e) {
+            log.error("Database exception");
             e.printStackTrace();
         }
 
@@ -369,7 +341,7 @@ public class MainForm extends JFrame {
         carModelTextField.setText("");
     }
 
-    private void createCustomerButtonAction(ActionEvent actionEvent) {
+    private void createCustomerButtonAction() {
         CustomersTableModel model = (CustomersTableModel) customerTable.getModel();
         Customer customer = new Customer();
         if (customerFullnameTextField.getText().equals("")) {
@@ -394,6 +366,7 @@ public class MainForm extends JFrame {
             customerComboBox.addItem(customer);
             JOptionPane.showMessageDialog(MainForm.this, bundle.getString("customerCreatedDialog"));
         } catch (DatabaseException e) {
+            log.error("Database exception");
             e.printStackTrace();
         }
 
@@ -402,7 +375,7 @@ public class MainForm extends JFrame {
         customerPhoneNumberTextField.setText("");
     }
 
-    private void createLeaseButtonAction(ActionEvent actionEvent) {
+    private void createLeaseButtonAction() {
         LeasesTableModel model = (LeasesTableModel) leaseTable.getModel();
         Lease lease = new Lease();
         lease.setCustomer((Customer) customerComboBox.getSelectedItem());
@@ -415,6 +388,7 @@ public class MainForm extends JFrame {
             try {
                 lease.setPrice(leaseManager.calculatePriceByDays(lease));
             } catch (DatabaseException e) {
+                log.error("Database exception");
                 e.printStackTrace();
             }
             try {
@@ -423,31 +397,41 @@ public class MainForm extends JFrame {
                 carDataModel.updateCar(lease.getCar());
                 JOptionPane.showMessageDialog(MainForm.this, bundle.getString("leaseCreatedDialog"));
             } catch (DatabaseException e) {
+                log.error("Database exception");
                 e.printStackTrace();
             }
         }
 
     }
 
-    private void updateCarButtonAction(ActionEvent actionEvent) {
+    private void updateCarButtonAction() {
         int row = carTable.getSelectedRow();
 
-        JTextField licencePlate = null;
-        JTextField model = null;
-        JTextField price = null;
+        JTextField licencePlate;
+        JTextField model;
+        JTextField price;
+        JButton updateButton;
         try {
             licencePlate = new JTextField(carManager.getCarByID((Long) carTable.getValueAt(row, 0)).getLicencePlate());
             model = new JTextField(carManager.getCarByID((Long) carTable.getValueAt(row, 0)).getModel());
             price = new JTextField(carManager.getCarByID((Long) carTable.getValueAt(row, 0)).getRentalPayment().toString());
+            updateButton = new JButton("Update");
 
             
             Object[] fields = {
                     "Licence Plate", licencePlate,
                     "Model", model,
-                    "Price", price
+                    "Price", price,
+                    updateButton
             };
 
-            JOptionPane.showInputDialog(null, fields);
+            JOptionPane.showInputDialog(null, fields, JOptionPane.CLOSED_OPTION);
+            updateButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    System.err.println("TOTO");
+                }
+            });
 
         } catch (DatabaseException e) {
             e.printStackTrace();
@@ -455,7 +439,7 @@ public class MainForm extends JFrame {
     }
 
 
-    private void deleteCarButtonAction(ActionEvent actionEvent) {
+    private void deleteCarButtonAction() {
         CarsTableModel model = (CarsTableModel) carTable.getModel();
         int row = carTable.getSelectedRow();
         if (row < 0) {
@@ -467,7 +451,9 @@ public class MainForm extends JFrame {
                     carManager.deleteCar((Long) carTable.getValueAt(row, 0));
                     carComboBox.removeItem(car);
                     model.removeRow(row);
+                    JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carDeletedDialog"));
                 } catch (DatabaseException e) {
+                    log.error("Database exception");
                     e.printStackTrace();
                 }
             } else {
@@ -478,7 +464,7 @@ public class MainForm extends JFrame {
 
     }
 
-    private void deleteCustomerButtonAction(ActionEvent actionEvent) {
+    private void deleteCustomerButtonAction() {
         CustomersTableModel model = (CustomersTableModel) customerTable.getModel();
         int row = customerTable.getSelectedRow();
         if (row < 0) {
@@ -490,10 +476,13 @@ public class MainForm extends JFrame {
                     customerManager.deleteCustomer((Long) customerTable.getValueAt(row, 0));
                     customerComboBox.removeItem(customer);
                     model.removeRow(row);
+                    JOptionPane.showMessageDialog(MainForm.this, bundle.getString("customerDeletedDialog"));
+
                 } else {
                     JOptionPane.showMessageDialog(MainForm.this, bundle.getString("customerStatusDialog"));
                 }
             } catch (DatabaseException e) {
+                log.error("Database exception");
                 e.printStackTrace();
             }
         }
@@ -501,7 +490,7 @@ public class MainForm extends JFrame {
 
     }
 
-    private void deleteLeaseButtonAction(ActionEvent actionEvent) {
+    private void deleteLeaseButtonAction() {
         LeasesTableModel model = (LeasesTableModel) leaseTable.getModel();
         int row = leaseTable.getSelectedRow();
         if (row < 0) {
@@ -512,7 +501,9 @@ public class MainForm extends JFrame {
                 leaseManager.deleteLease((Long) leaseTable.getValueAt(row, 0));
                 model.removeRow(row);
                 customerDataModel.update(customerManager.getCustomerByID(customer.getID()));
+                JOptionPane.showMessageDialog(MainForm.this, bundle.getString("leaseDeletedDialog"));
             } catch (DatabaseException e) {
+                log.error("Database exception");
                 e.printStackTrace();
             }
         }

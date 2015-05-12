@@ -17,7 +17,7 @@ public class LeasesTableModel extends AbstractTableModel {
     private LeaseManager leaseManager;
     private CarManager carManager;
     private CustomerManager customerManager;
-    private List<Lease> leases = new ArrayList<Lease>();
+    private List<Lease> leases = new ArrayList<>();
 
     private static enum COLUMNS {
         ID, CAR, CUSTOMER, PRICE, STARTDATE, ENDDATE
@@ -156,7 +156,4 @@ public class LeasesTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
-    public List<Lease> getAllCustomers() {
-        return leases;
-    }
 }
