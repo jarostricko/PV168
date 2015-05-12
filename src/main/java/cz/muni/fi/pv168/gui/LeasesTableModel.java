@@ -136,22 +136,6 @@ public class LeasesTableModel extends AbstractTableModel {
         }
     }
 
-    @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-        switch (COLUMNS.values()[columnIndex]) {
-            case ID:
-                return false;
-            case CAR:
-            case CUSTOMER:
-            case PRICE:
-            case ENDDATE:
-            case STARTDATE:
-                return true;
-            default:
-                throw new IllegalArgumentException("columnIndex");
-        }
-    }
-
     public void addLease(Lease lease) {
         leases.add(lease);
         int lastRow = leases.size() - 1;
