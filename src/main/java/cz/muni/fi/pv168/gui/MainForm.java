@@ -440,6 +440,7 @@ public class MainForm extends JFrame {
             model = new JTextField(carManager.getCarByID((Long) carTable.getValueAt(row, 0)).getModel());
             price = new JTextField(carManager.getCarByID((Long) carTable.getValueAt(row, 0)).getRentalPayment().toString());
 
+            
             Object[] fields = {
                     "Licence Plate", licencePlate,
                     "Model", model,
