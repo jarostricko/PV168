@@ -428,6 +428,25 @@ public class MainForm extends JFrame {
     private void updateCarButtonAction(ActionEvent actionEvent) {
         int row = carTable.getSelectedRow();
 
+        JTextField licencePlate = null;
+        JTextField model = null;
+        JTextField price = null;
+        try {
+            licencePlate = new JTextField(carManager.getCarByID((Long) carTable.getValueAt(row, 0)).getLicencePlate());
+            model = new JTextField(carManager.getCarByID((Long) carTable.getValueAt(row, 0)).getModel());
+            price = new JTextField(carManager.getCarByID((Long) carTable.getValueAt(row, 0)).getRentalPayment().toString());
+
+            Object[] fields = {
+                    "Licence Plate", licencePlate,
+                    "Model", model,
+                    "Price", price
+            };
+
+            JOptionPane.showInputDialog(null, fields);
+
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
     }
 
 
