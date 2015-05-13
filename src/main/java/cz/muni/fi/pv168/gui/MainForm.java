@@ -51,6 +51,12 @@ public class MainForm extends JFrame {
     private JButton deleteCustomerButton;
     private JButton updateLeaseButton;
     private JButton deleteLeaseButton;
+    private JComboBox carComboBox1;
+    private JTextField IDCarTextField;
+    private JTextField licencePlateCarTextField;
+    private JTextField modelCarTextField;
+    private JTextField rentalPaymentCarTextField;
+    private JButton updateCarButton1;
 
     BasicDataSource basicDataSource = new BasicDataSource();
     final static Logger log = LoggerFactory.getLogger(MainForm.class);
@@ -114,6 +120,7 @@ public class MainForm extends JFrame {
         }
         for (Car car : cars) {
             carComboBox.addItem(car);
+            carComboBox1.addItem(car);
         }
 
         List<Customer> customers = new ArrayList<>();
@@ -124,7 +131,9 @@ public class MainForm extends JFrame {
         }
         for (Customer customer : customers) {
             customerComboBox.addItem(customer);
+
         }
+
     }
 
     private LeasesSwingWorker leasesSwingWorker;
@@ -287,6 +296,22 @@ public class MainForm extends JFrame {
                 deleteLeaseButtonAction();
             }
         });
+        carComboBox1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Car car = (Car) carComboBox1.getSelectedItem();
+                licencePlateCarTextField.setText(car.getLicencePlate());
+                modelCarTextField.setText(car.getModel());
+                rentalPaymentCarTextField.setText(car.getRentalPayment().toString());
+            }
+        });
+        updateCarButton1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                updateCarButtonAction();
+
+            }
+        });
     }
 
     public static void main(String[] args) throws InvocationTargetException, InterruptedException {
@@ -330,6 +355,7 @@ public class MainForm extends JFrame {
             carManager.createCar(car);
             model.addCar(car);
             carComboBox.addItem(car);
+            carComboBox1.addItem(car);
             JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carCreatedDialog"));
         } catch (DatabaseException e) {
             log.error("Database exception");
@@ -405,33 +431,14 @@ public class MainForm extends JFrame {
     }
 
     private void updateCarButtonAction() {
-        int row = carTable.getSelectedRow();
-
-        JTextField licencePlate;
-        JTextField model;
-        JTextField price;
-        JButton updateButton;
+        Car car = (Car) carComboBox1.getSelectedItem();
+        car.setLicencePlate(licencePlateCarTextField.getText());
+        car.setModel(modelCarTextField.getText());
+        car.setRentalPayment(new BigDecimal(rentalPaymentCarTextField.getText()));
         try {
-            licencePlate = new JTextField(carManager.getCarByID((Long) carTable.getValueAt(row, 0)).getLicencePlate());
-            model = new JTextField(carManager.getCarByID((Long) carTable.getValueAt(row, 0)).getModel());
-            price = new JTextField(carManager.getCarByID((Long) carTable.getValueAt(row, 0)).getRentalPayment().toString());
-            updateButton = new JButton("Update");
-
-            
-            Object[] fields = {
-                    "Licence Plate", licencePlate,
-                    "Model", model,
-                    "Price", price,
-                    updateButton
-            };
-
-            JOptionPane.showInputDialog(null, fields, JOptionPane.CLOSED_OPTION);
-            updateButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent actionEvent) {
-                    System.err.println("TOTO");
-                }
-            });
+            carManager.updateCar(car);
+            carDataModel.updateCar(car);
+            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("updatedCarDialog"));
 
         } catch (DatabaseException e) {
             e.printStackTrace();
@@ -450,6 +457,7 @@ public class MainForm extends JFrame {
                     Car car = carManager.getCarByID((Long) carTable.getValueAt(row, 0));
                     carManager.deleteCar((Long) carTable.getValueAt(row, 0));
                     carComboBox.removeItem(car);
+                    carComboBox1.removeItem(car);
                     model.removeRow(row);
                     JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carDeletedDialog"));
                 } catch (DatabaseException e) {
