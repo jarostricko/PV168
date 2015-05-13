@@ -56,7 +56,10 @@ public class MainForm extends JFrame {
     private JTextField licencePlateCarTextField;
     private JTextField modelCarTextField;
     private JTextField rentalPaymentCarTextField;
-    private JButton updateCarButton1;
+    private JTextField customerUpdateFullnameTextField;
+    private JTextField customerUpdateAddressTextField;
+    private JTextField customerUpdatePhonenumberTextField;
+    private JComboBox customerComboBox1;
 
     BasicDataSource basicDataSource = new BasicDataSource();
     final static Logger log = LoggerFactory.getLogger(MainForm.class);
@@ -263,7 +266,13 @@ public class MainForm extends JFrame {
         createLeaseButton.addActionListener(actionEvent -> createLeaseButtonAction());
 
         //Update buttons
-        updateCarButton.addActionListener(actionEvent -> updateCarButtonAction());
+        updateCarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                updateCarButtonAction();
+
+            }
+        });
         updateCustomerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -305,11 +314,14 @@ public class MainForm extends JFrame {
                 rentalPaymentCarTextField.setText(car.getRentalPayment().toString());
             }
         });
-        updateCarButton1.addActionListener(new ActionListener() {
+
+        customerComboBox1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                updateCarButtonAction();
-
+                Customer customer = (Customer) customerComboBox.getSelectedItem();
+                customerUpdateFullnameTextField.setText(customer.getFullName());
+                customerUpdateAddressTextField.setText(customer.getAddress());
+                customerUpdatePhonenumberTextField.setText(customer.getPhoneNumber());
             }
         });
     }
