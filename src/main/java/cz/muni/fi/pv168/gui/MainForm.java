@@ -504,7 +504,7 @@ public class MainForm extends JFrame {
         int row = carTable.getSelectedRow();
         if (row < 0) {
             JOptionPane.showMessageDialog(MainForm.this, bundle.getString("selectRowDialog"));
-        } else if (carManager.getCarByID((Long) carTable.getValueAt(row, 0)).getStatus()) {
+        } else if (!carManager.getCarByID((Long) carTable.getValueAt(row, 0)).getStatus()) {
             JOptionPane.showMessageDialog(MainForm.this, bundle.getString("wrongCarStatusDialog"));
         } else {
             if ((Boolean) carTable.getValueAt(row, 4)) {
@@ -530,8 +530,8 @@ public class MainForm extends JFrame {
             JOptionPane.showMessageDialog(MainForm.this, bundle.getString("selectRowDialog"));
         } else {
             try {
-                if (leaseManager.checkIfCustomerIsWithoutLeases(customerManager.getCustomerByID((Long) customerTable.getValueAt(row, 0)))) {
-                    Customer customer = customerManager.getCustomerByID((Long) customerTable.getValueAt(row, 0));
+                Customer customer = customerManager.getCustomerByID((Long) customerTable.getValueAt(row, 0));
+                if (leaseManager.checkIfCustomerIsWithoutLeases(customer) && customer.getStatus()) {
                     customerManager.deleteCustomer((Long) customerTable.getValueAt(row, 0));
                     customerComboBox.removeItem(customer);
                     customerComboBox1.removeItem(customer);

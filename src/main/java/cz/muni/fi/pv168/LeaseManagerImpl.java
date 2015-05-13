@@ -349,7 +349,12 @@ public class LeaseManagerImpl implements LeaseManager {
 
     public boolean checkIfCustomerIsWithoutLeases(Customer customer) throws DatabaseException {
         List<Lease> leases = getLeasesForCustomer(customer);
-        return leases.isEmpty();
+
+        if (leases.isEmpty()) {
+            customer.setStatus(true);
+            return true;
+        }
+        return false;
     }
 
 }

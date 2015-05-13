@@ -85,6 +85,8 @@ public class CarsTableModel extends AbstractTableModel {
             case RENTALPAYMENT:
                 car.setRentalPayment((BigDecimal) aValue);
                 break;
+            case STATUS:
+                car.setStatus((Boolean) aValue);
             default:
                 throw new IllegalArgumentException("columnIndex");
         }
