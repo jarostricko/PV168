@@ -117,7 +117,10 @@ public class MainForm extends JFrame {
         leaseTable.setModel(leaseDataModel);
         availableCheckBox.setSelected(true);
         bundle = java.util.ResourceBundle.getBundle("cz.muni.fi.pv168.gui.Bundle");
-
+        carTable.getColumnModel().getColumn(4).setMinWidth(0);
+        carTable.getColumnModel().getColumn(4).setMaxWidth(0);
+        customerTable.getColumnModel().getColumn(4).setMinWidth(0);
+        customerTable.getColumnModel().getColumn(4).setMaxWidth(0);
 
     }
 
@@ -283,7 +286,13 @@ public class MainForm extends JFrame {
         //Create buttons
         createCarButton.addActionListener(actionEvent -> createCarButtonAction());
         createCustomerButton.addActionListener(actionEvent -> createCustomerButtonAction());
-        createLeaseButton.addActionListener(actionEvent -> createLeaseButtonAction());
+        createLeaseButton.addActionListener(actionEvent -> {
+            try {
+                createLeaseButtonAction();
+            } catch (DatabaseException e) {
+                e.printStackTrace();
+            }
+        });
 
         //Update buttons
         updateCarButton.addActionListener(actionEvent -> updateCarButtonAction());
@@ -291,7 +300,13 @@ public class MainForm extends JFrame {
         updateLeaseButton.addActionListener(actionEvent -> updateLeaseButtonAction());
 
         //Delete buttons
-        deleteCarButton.addActionListener(actionEvent -> deleteCarButtonAction());
+        deleteCarButton.addActionListener(actionEvent -> {
+            try {
+                deleteCarButtonAction();
+            } catch (DatabaseException e) {
+                e.printStackTrace();
+            }
+        });
         deleteCustomerButton.addActionListener(actionEvent -> deleteCustomerButtonAction());
         deleteLeaseButton.addActionListener(actionEvent -> deleteLeaseButtonAction());
 
@@ -416,7 +431,7 @@ public class MainForm extends JFrame {
         customerPhoneNumberTextField.setText("");
     }
 
-    private void createLeaseButtonAction() {
+    private void createLeaseButtonAction() throws DatabaseException {
         LeasesTableModel model = (LeasesTableModel) leaseTable.getModel();
         Lease lease = new Lease();
         lease.setCustomer((Customer) customerComboBox.getSelectedItem());
@@ -425,23 +440,15 @@ public class MainForm extends JFrame {
         lease.setEndDate(convertUtilToSql(leaseEndDateSetter.getDate()));
         if (leaseManager.getDateDiff(lease.getStartDate(), lease.getEndDate(), TimeUnit.DAYS) < 0) {
             JOptionPane.showMessageDialog(MainForm.this, bundle.getString("leaseWrongDateDialog"));
+        } else if (!leaseManager.checkIfCarInThisLeaseIsAvailable(lease)) {
+            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("leaseWrongStatusDialog"));
         } else {
-            try {
-                lease.setPrice(leaseManager.calculatePriceByDays(lease));
-            } catch (DatabaseException e) {
-                log.error("Database exception");
-                e.printStackTrace();
-            }
-            try {
-                leaseManager.createLease(lease);
-                model.addLease(lease);
-                carDataModel.updateCar(lease.getCar());
-                leaseComboBox.addItem(lease);
-                JOptionPane.showMessageDialog(MainForm.this, bundle.getString("leaseCreatedDialog"));
-            } catch (DatabaseException e) {
-                log.error("Database exception");
-                e.printStackTrace();
-            }
+            lease.setPrice(leaseManager.calculatePriceByDays(lease));
+            leaseManager.createLease(lease);
+            model.addLease(lease);
+            carDataModel.updateCar(lease.getCar());
+            leaseComboBox.addItem(lease);
+            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("leaseCreatedDialog"));
         }
 
     }
@@ -454,6 +461,7 @@ public class MainForm extends JFrame {
         try {
             carManager.updateCar(car);
             carDataModel.updateCar(car);
+            leaseDataModel.fireTableDataChanged();
             JOptionPane.showMessageDialog(MainForm.this, bundle.getString("updatedCarDialog"));
 
         } catch (DatabaseException e) {
@@ -491,27 +499,22 @@ public class MainForm extends JFrame {
     }
 
 
-
-
-    private void deleteCarButtonAction() {
+    private void deleteCarButtonAction() throws DatabaseException {
         CarsTableModel model = (CarsTableModel) carTable.getModel();
         int row = carTable.getSelectedRow();
         if (row < 0) {
             JOptionPane.showMessageDialog(MainForm.this, bundle.getString("selectRowDialog"));
+        } else if (carManager.getCarByID((Long) carTable.getValueAt(row, 0)).getStatus()) {
+            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("wrongCarStatusDialog"));
         } else {
             if ((Boolean) carTable.getValueAt(row, 4)) {
-                try {
-                    Car car = carManager.getCarByID((Long) carTable.getValueAt(row, 0));
-                    carManager.deleteCar((Long) carTable.getValueAt(row, 0));
-                    carComboBox.removeItem(car);
-                    carComboBox1.removeItem(car);
-                    leaseUpdateCarComboBox.removeItem(car);
-                    model.removeRow(row);
-                    JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carDeletedDialog"));
-                } catch (DatabaseException e) {
-                    log.error("Database exception");
-                    e.printStackTrace();
-                }
+                Car car = carManager.getCarByID((Long) carTable.getValueAt(row, 0));
+                carManager.deleteCar((Long) carTable.getValueAt(row, 0));
+                carComboBox.removeItem(car);
+                carComboBox1.removeItem(car);
+                leaseUpdateCarComboBox.removeItem(car);
+                model.removeRow(row);
+                JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carDeletedDialog"));
             } else {
                 JOptionPane.showMessageDialog(MainForm.this, bundle.getString("carStatusDialog"));
             }
