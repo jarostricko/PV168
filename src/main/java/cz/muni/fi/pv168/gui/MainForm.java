@@ -134,6 +134,7 @@ public class MainForm extends JFrame {
         }
         for (Customer customer : customers) {
             customerComboBox.addItem(customer);
+            customerComboBox1.addItem(customer);
 
         }
 
@@ -276,7 +277,7 @@ public class MainForm extends JFrame {
         updateCustomerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-
+                updateCustomerButtonAction();
             }
         });
         updateLeaseButton.addActionListener(new ActionListener() {
@@ -318,7 +319,7 @@ public class MainForm extends JFrame {
         customerComboBox1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                Customer customer = (Customer) customerComboBox.getSelectedItem();
+                Customer customer = (Customer) customerComboBox1.getSelectedItem();
                 customerUpdateFullnameTextField.setText(customer.getFullName());
                 customerUpdateAddressTextField.setText(customer.getAddress());
                 customerUpdatePhonenumberTextField.setText(customer.getPhoneNumber());
@@ -402,6 +403,7 @@ public class MainForm extends JFrame {
             customerManager.createCustomer(customer);
             model.addCustomer(customer);
             customerComboBox.addItem(customer);
+            customerComboBox1.addItem(customer);
             JOptionPane.showMessageDialog(MainForm.this, bundle.getString("customerCreatedDialog"));
         } catch (DatabaseException e) {
             log.error("Database exception");
@@ -457,6 +459,20 @@ public class MainForm extends JFrame {
         }
     }
 
+    private void updateCustomerButtonAction() {
+        Customer customer = (Customer) customerComboBox1.getSelectedItem();
+        customer.setFullName(customerUpdateFullnameTextField.getText());
+        customer.setAddress(customerUpdateAddressTextField.getText());
+        customer.setPhoneNumber(customerUpdatePhonenumberTextField.getText());
+        try {
+            customerManager.updateCustomer(customer);
+            customerDataModel.update(customer);
+            JOptionPane.showMessageDialog(MainForm.this, bundle.getString("updatedCustomerDialog"));
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void deleteCarButtonAction() {
         CarsTableModel model = (CarsTableModel) carTable.getModel();
@@ -495,6 +511,7 @@ public class MainForm extends JFrame {
                     Customer customer = customerManager.getCustomerByID((Long) customerTable.getValueAt(row, 0));
                     customerManager.deleteCustomer((Long) customerTable.getValueAt(row, 0));
                     customerComboBox.removeItem(customer);
+                    customerComboBox1.removeItem(customer);
                     model.removeRow(row);
                     JOptionPane.showMessageDialog(MainForm.this, bundle.getString("customerDeletedDialog"));
 
