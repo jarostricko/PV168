@@ -151,6 +151,12 @@ public class LeasesTableModel extends AbstractTableModel {
         leases.remove(row);
         fireTableDataChanged();
     }
+
+    public void updateLease(Lease lease) {
+        leases.remove(lease);
+        leases.add(lease);
+        fireTableDataChanged();
+    }
     public void clear() {
         leases.clear();
         fireTableDataChanged();
